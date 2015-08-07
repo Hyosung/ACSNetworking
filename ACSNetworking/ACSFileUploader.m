@@ -24,6 +24,12 @@
 
 #import "ACSFileUploader.h"
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
+#import <UIKit/UIKit.h>
+#else
+#import <AppKit/AppKit.h>
+#endif
+
 @implementation ACSFileUploader
 
 @synthesize URL = _URL;
@@ -63,9 +69,15 @@
                                                             else if ([fileValue isKindOfClass:[NSData class]]) {
                                                                 [formData appendPartWithFormData:fileValue name:keyName];
                                                             }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
                                                             else if ([fileValue isKindOfClass:[UIImage class]]) {
                                                                 [formData appendPartWithFormData:UIImageJPEGRepresentation(fileValue, 1.0) name:keyName];
                                                             }
+#else
+                                                            else if ([fileValue isKindOfClass:[NSImage class]]) {
+                                                                [formData appendPartWithFormData:[fileValue TIFFRepresentationUsingCompression:NSTIFFCompressionNone factor:1.0] name:keyName];
+                                                            }
+#endif
                                                             else if ([fileValue isKindOfClass:[NSURL class]]) {
                                                                 [formData appendPartWithFileURL:fileValue name:keyName error:nil];
                                                             }
