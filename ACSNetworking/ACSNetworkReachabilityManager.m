@@ -24,10 +24,11 @@
 
 #import "ACSNetworkReachabilityManager.h"
 
-#if TARGET_OS_IPHONE
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
 #import <UIKit/UIDevice.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #endif
+
 #import <netinet/in.h>
 #import <netinet6/in6.h>
 #import <arpa/inet.h>
