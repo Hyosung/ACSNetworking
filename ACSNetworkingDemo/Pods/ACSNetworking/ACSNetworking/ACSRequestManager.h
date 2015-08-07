@@ -72,38 +72,38 @@
 - (NSString *)fetchDataFromPath:(NSString *) path
                          method:(ACSRequestMethod) method
                      parameters:(NSDictionary *) parameters
-                     completion:(ACSRequestCompletionHandler) completionBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用fetchDataFromRequester:");
+                     completion:(ACSRequestCompletionHandler) completionBlock NS_DEPRECATED_IOS(2_0, 6_0, "请使用fetchDataFromRequester:");
 
 - (NSString *)GET_fetchDataFromPath:(NSString *) path
                          parameters:(NSDictionary *) parameters
-                         completion:(ACSRequestCompletionHandler) completionBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用fetchDataFromRequester:");
+                         completion:(ACSRequestCompletionHandler) completionBlock NS_DEPRECATED_IOS(2_0, 6_0, "请使用fetchDataFromRequester:");
 
 - (NSString *)POST_fetchDataFromPath:(NSString *) path
                           parameters:(NSDictionary *) parameters
-                          completion:(ACSRequestCompletionHandler) completionBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用fetchDataFromRequester:");
+                          completion:(ACSRequestCompletionHandler) completionBlock NS_DEPRECATED_IOS(2_0, 6_0, "请使用fetchDataFromRequester:");
 
 - (NSString *)uploadFileFromPath:(NSString *) path
                         fileInfo:(NSDictionary *) fileInfo
                       parameters:(NSDictionary *) parameters
-                        progress:(ACSRequestProgressHandler) progressBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用uploadFileFromRequester:");
+                        progress:(ACSRequestProgressHandler) progressBlock NS_DEPRECATED_IOS(2_0, 6_0, "请使用uploadFileFromRequester:");
 
 - (NSString *)downloadFileFromPath:(NSString *) path
-                          progress:(ACSRequestProgressHandler) progressBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用downloadFileFromRequester:");
+                          progress:(ACSRequestProgressHandler) progressBlock NS_DEPRECATED_IOS(2_0, 6_0, "请使用downloadFileFromRequester:");
 
 #pragma mark - 自定义请求链接
 
 - (NSString *)fetchDataFromURLString:(NSString *) URLString
                               method:(ACSRequestMethod) method
                           parameters:(NSDictionary *) parameters
-                          completion:(ACSRequestCompletionHandler) completionBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用fetchDataFromRequester:");
+                          completion:(ACSRequestCompletionHandler) completionBlock NS_DEPRECATED_IOS(2_0, 6_0, "请使用fetchDataFromRequester:");
 
 - (NSString *)uploadFileFromURLString:(NSString *) URLString
                              fileInfo:(NSDictionary *) fileInfo
                            parameters:(NSDictionary *) parameters
-                             progress:(ACSRequestProgressHandler) progressBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用uploadFileFromRequester:");
+                             progress:(ACSRequestProgressHandler) progressBlock NS_DEPRECATED_IOS(2_0, 6_0, "请使用uploadFileFromRequester:");
 
 - (NSString *)downloadFileFromURLString:(NSString *) URLString
-                               progress:(ACSRequestProgressHandler) progressBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用downloadFileFromRequester:");
+                               progress:(ACSRequestProgressHandler) progressBlock NS_DEPRECATED_IOS(2_0, 6_0, "请使用downloadFileFromRequester:");
 #endif
 
 @end
