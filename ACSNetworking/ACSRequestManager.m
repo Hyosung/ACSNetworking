@@ -337,6 +337,7 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
     }
     
     [self.manager.operationQueue addOperation:operation];
+    
     NSString *operationIdentifier = ACSGenerateOperationIdentifier();
     [self.operations setObject:operation forKey:operationIdentifier];
     
@@ -480,7 +481,6 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
 #if TARGET_OS_IPHONE
                     resultData = [UIImage imageWithData:fileData];
 #else
-                    
                     resultData = [[NSImage alloc] initWithData:fileData];
 #endif
                 }

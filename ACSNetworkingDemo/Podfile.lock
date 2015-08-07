@@ -28,7 +28,7 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   ACSNetworking:
-    :path: ../
+    :local: ../
 
 CHECKOUT OPTIONS:
   ACSNetworking:
@@ -36,7 +36,7 @@ CHECKOUT OPTIONS:
     :tag: 0.0.1
 
 SPEC CHECKSUMS:
-  ACSNetworking: f6a99203a1a9b1c574fed00df6add95ed6192734
+  ACSNetworking: ede056c003f0c27c40901cbea6f234039e179354
   AFNetworking: 05edc0ac4c4c8cf57bcf4b84be5b0744b6d8e71e
 
 COCOAPODS: 0.35.0

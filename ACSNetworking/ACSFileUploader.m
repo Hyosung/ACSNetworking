@@ -53,13 +53,22 @@
                                                         __strong __typeof__(weakSelf) self = weakSelf;
                                                         NSArray *allKeys = self.fileInfo.allKeys;
                                                         for (NSString *keyName in allKeys) {
-                                                            id fileURL = self.fileInfo[keyName];
-                                                            if ([fileURL isKindOfClass:[NSString class]]) {
-                                                                fileURL = [NSURL URLWithString:fileURL];
+                                                            id fileValue = self.fileInfo[keyName];
+                                                            if ([fileValue isKindOfClass:[NSString class]]) {
+                                                                
+                                                                [formData appendPartWithFileURL:[NSURL URLWithString:fileValue]
+                                                                                           name:keyName
+                                                                                          error:nil];
                                                             }
-                                                            [formData appendPartWithFileURL:fileURL
-                                                                                       name:keyName
-                                                                                      error:nil];
+                                                            else if ([fileValue isKindOfClass:[NSData class]]) {
+                                                                [formData appendPartWithFormData:fileValue name:keyName];
+                                                            }
+                                                            else if ([fileValue isKindOfClass:[UIImage class]]) {
+                                                                [formData appendPartWithFormData:UIImageJPEGRepresentation(fileValue, 1.0) name:keyName];
+                                                            }
+                                                            else if ([fileValue isKindOfClass:[NSURL class]]) {
+                                                                [formData appendPartWithFileURL:fileValue name:keyName error:nil];
+                                                            }
                                                         }
                                                     } error:nil];
 }

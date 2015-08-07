@@ -27,9 +27,7 @@
 @interface ACSURLHTTPRequester : NSObject <ACSURLHTTPRequest>
 
 /**
- *  @author Stoney, 15-07-31 09:07:31
- *
- *  @brief  是否缓存响应的数据
+ 是否缓存响应的数据
  */
 @property BOOL cacheResponseData;
 @property (nonatomic, copy) ACSRequestCompletionHandler completionBlock;

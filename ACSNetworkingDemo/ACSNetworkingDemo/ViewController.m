@@ -10,10 +10,10 @@
 
 #import <ACSNetworking.h>
 
-void ACPrintRunTime(void (^codeBlock)(void)) {
+void ACPrintRunTime(void (^codeBlock)(CFAbsoluteTime startTime)) {
     assert(codeBlock);
     CFAbsoluteTime startTime = CFAbsoluteTimeGetCurrent();
-    codeBlock();
+    codeBlock(startTime);
     NSLog(@"运行时间：%f", CFAbsoluteTimeGetCurrent() - startTime);
 }
 
@@ -36,6 +36,7 @@ void ACPrintRunTime(void (^codeBlock)(void)) {
 }
 
 - (IBAction)beginDownloadMP3:(UIButton *)sender {
+    
     if ([[ACSRequestManager sharedManager] isPausedOperationWithIdentifier:self.MP3Identifier]) {
         [[ACSRequestManager sharedManager] resumeOperationWithIdentifier:self.MP3Identifier];
     }
@@ -59,7 +60,7 @@ void ACPrintRunTime(void (^codeBlock)(void)) {
 }
 
 - (IBAction)pauseDownloadMP3:(UIButton *)sender {
-    if ([[ACSRequestManager sharedManager] isExecutingOperationWithIdentifier:self.MP3Identifier]) {
+    if (![[ACSRequestManager sharedManager] isExecutingOperationWithIdentifier:self.MP3Identifier]) {
         return;
     }
     

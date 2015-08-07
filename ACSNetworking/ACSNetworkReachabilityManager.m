@@ -24,9 +24,10 @@
 
 #import "ACSNetworkReachabilityManager.h"
 
-#if TARGET_OS_IPHONE
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
 #import <UIKit/UIDevice.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
+#else
 #endif
 
 #import <netinet/in.h>
@@ -93,7 +94,9 @@ static ACSNetworkReachabilityStatus ACSNetworkReachabilityStatusForFlags(SCNetwo
                 if ([currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyLTE]) {
                     status = ACSNetworkReachabilityStatusReachableVia4G;
                 }
-                else if ([currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyEdge] || [currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyGPRS]) {
+                else if ([currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyEdge] ||
+                         [currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyGPRS] ||
+                         [currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyCDMA1x]) {
                     status = ACSNetworkReachabilityStatusReachableVia2G;
                 }
                 else {
