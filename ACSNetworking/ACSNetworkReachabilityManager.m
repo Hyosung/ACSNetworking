@@ -26,13 +26,13 @@
 
 #if TARGET_OS_IPHONE
 #import <UIKit/UIDevice.h>
+#import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #endif
 #import <netinet/in.h>
 #import <netinet6/in6.h>
 #import <arpa/inet.h>
 #import <ifaddrs.h>
 #import <netdb.h>
-#import <CoreTelephony/CTTelephonyNetworkInfo.h>
 
 NSString * const ACSNetworkingReachabilityDidChangeNotification = @"com.stoney.networking.reachability.change";
 NSString * const ACSNetworkingReachabilityNotificationStatusItem = @"ACSNetworkingReachabilityNotificationStatusItem";

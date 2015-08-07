@@ -32,7 +32,11 @@
 #import "ACSCache.h"
 
 #import <CommonCrypto/CommonDigest.h>
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
 #import <MobileCoreServices/MobileCoreServices.h>
+#else
+#import <CoreServices/CoreServices.h>
+#endif
 
 @interface ACSRequestManager ()
 
@@ -104,6 +108,9 @@ ACSNETWORK_STATIC_INLINE NSData * ACSFileDataFromPath(NSString *path) {
 }
 
 ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType) {
+    
+#ifdef __UTTYPE__
+    
     CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, (__bridge CFStringRef)MIMEType, NULL);
     CFStringRef filenameExtension = UTTypeCopyPreferredTagWithClass(UTI, kUTTagClassFilenameExtension);
     CFRelease(UTI);
@@ -111,6 +118,10 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
         return @"";
     }
     return CFBridgingRelease(filenameExtension);
+#else
+#pragma unused (MIMEType)
+    return @"";
+#endif
 }
 
 #ifdef _AFNETWORKING_
