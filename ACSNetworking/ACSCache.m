@@ -124,6 +124,7 @@
 @property (nonatomic, strong) AutoCleanCache *memoryCache;
 @property (nonatomic, copy, readwrite) NSString *diskCachePath;
 @property (nonatomic, copy) NSString *applicationPath;
+@property (nonatomic, strong) NSFileManager *fileManager;
 
 - (void)setObject:(id)obj forURL:(NSURL *)URL toDisk:(BOOL)toDisk fileAttributes:(NSDictionary *) attributes;
 
@@ -149,11 +150,12 @@ ACSNETWORK_STATIC_INLINE NSString * ACSDiskCacheFilePath(NSString *pathComponent
     assert(pathComponent);
     assert(diskFolder);
     
-    if (![[NSFileManager defaultManager] fileExistsAtPath:diskFolder]) {
-        [[NSFileManager defaultManager] createDirectoryAtPath:diskFolder
-                                  withIntermediateDirectories:YES
-                                                   attributes:nil
-                                                        error:NULL];
+    NSFileManager *fileManager = [NSFileManager new];
+    if (![fileManager fileExistsAtPath:diskFolder]) {
+        [fileManager createDirectoryAtPath:diskFolder
+               withIntermediateDirectories:YES
+                                attributes:nil
+                                     error:NULL];
     }
     return [diskFolder stringByAppendingPathComponent:pathComponent];
 }
@@ -165,6 +167,7 @@ ACSNETWORK_STATIC_INLINE NSString * ACSDiskCacheFilePath(NSString *pathComponent
         self.memoryCache.name = @"com.acsnetworking.cache";
         self.diskCachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:@"com.acsnetworking.cachedefault"];
         self.applicationPath = NSHomeDirectory();
+        self.fileManager = [NSFileManager new];
     }
     return self;
 }
@@ -243,16 +246,16 @@ ACSNETWORK_STATIC_INLINE NSString * ACSDiskCacheFilePath(NSString *pathComponent
     
     NSString *cacheKey = ACSCacheKeyForURL(URL);
     [self.memoryCache removeObjectForKey:cacheKey];
-    [[NSFileManager defaultManager] removeItemAtPath:ACSDiskCacheFilePath(cacheKey, self.diskCachePath) error:nil];
+    [self.fileManager removeItemAtPath:ACSDiskCacheFilePath(cacheKey, self.diskCachePath) error:nil];
 }
 
 - (void)cleanDiskMemory {
     [self.memoryCache removeAllObjects];
-    [[NSFileManager defaultManager] removeItemAtPath:self.diskCachePath error:nil];
-    [[NSFileManager defaultManager] createDirectoryAtPath:self.diskCachePath
-                              withIntermediateDirectories:YES
-                                               attributes:nil
-                                                    error:NULL];
+    [self.fileManager removeItemAtPath:self.diskCachePath error:nil];
+    [self.fileManager createDirectoryAtPath:self.diskCachePath
+                withIntermediateDirectories:YES
+                                 attributes:nil
+                                      error:NULL];
 }
 
 - (id)fetchDataFromMemoryCacheForURL:(NSURL *)URL {

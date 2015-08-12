@@ -49,6 +49,7 @@ NSString *const ACSNetworkingErrorDescriptionKey = @"ACSNetworkingErrorDescripti
 @property (nonatomic, strong) AFHTTPRequestOperationManager *manager;
 @property (nonatomic, weak  ) AFHTTPRequestSerializer <AFURLRequestSerialization> *rs;
 @property (nonatomic, strong) NSMapTable *operations;
+@property (nonatomic, strong) NSFileManager *fileManager;
 
 - (void (^)(AFHTTPRequestOperation *, id))requestSuccess:(id <ACSURLHTTPRequest>) requester;
 - (void (^)(AFHTTPRequestOperation *, NSError *))requestFailure:(id <ACSURLHTTPRequest>) requester;
@@ -96,11 +97,12 @@ ACSNETWORK_STATIC_INLINE NSString * ACSFilePathFromURL(NSURL *URL, NSString *fol
 }
 
 ACSNETWORK_STATIC_INLINE NSData * ACSFileDataFromPath(NSString *path) {
-    if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
+    NSFileManager *fileManager = [NSFileManager new];
+    if (![fileManager fileExistsAtPath:path]) {
         return nil;
     }
     
-    NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:nil];
+    NSDictionary *fileAttributes = [fileManager attributesOfItemAtPath:path error:nil];
     if (fileAttributes) {
         //判断文件是否过期
         NSTimeInterval timeDifference = [[NSDate date] timeIntervalSinceDate:[fileAttributes fileModificationDate]];
@@ -108,14 +110,15 @@ ACSNETWORK_STATIC_INLINE NSData * ACSFileDataFromPath(NSString *path) {
             return nil;
         }
     }
-    return [[NSFileManager defaultManager] contentsAtPath:path];
+    return [fileManager contentsAtPath:path];
 }
 
 ACSNETWORK_STATIC_INLINE unsigned long long ACSFileSizeFromPath(NSString *path) {
     unsigned long long fileSize = 0;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+    NSFileManager *fileManager = [NSFileManager new];
+    if ([fileManager fileExistsAtPath:path]) {
         NSError *error = nil;
-        NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:&error];
+        NSDictionary *fileAttributes = [fileManager attributesOfItemAtPath:path error:&error];
         if (!error && fileAttributes) {
             fileSize = [fileAttributes fileSize];
         }
@@ -162,6 +165,7 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
         self.manager.responseSerializer = [AFHTTPResponseSerializer serializer];
         self.rs = self.manager.requestSerializer;
         self.operations = [NSMapTable strongToWeakObjectsMapTable];
+        self.fileManager = [NSFileManager new];
     }
     return self;
 }
@@ -555,18 +559,18 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
                 filePath = ACSFilePathFromURL(requester.URL, [ACSNetworkConfiguration defaultConfiguration].downloadFolder, extension);
                 NSString *srcFilePath = ACSFilePathFromURL(requester.URL, NSTemporaryDirectory(), @"tmp");
                 //删除已存在的文件以便于后面的移动操作
-                if ([[NSFileManager defaultManager] fileExistsAtPath:srcFilePath]) {
+                if ([self.fileManager fileExistsAtPath:srcFilePath]) {
                     
-                    if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
-                        [[NSFileManager defaultManager] removeItemAtPath:filePath error:NULL];
+                    if ([self.fileManager fileExistsAtPath:filePath]) {
+                        [self.fileManager removeItemAtPath:filePath error:NULL];
                     }
                     //移动
-                    if ([[NSFileManager defaultManager] moveItemAtPath:srcFilePath toPath:filePath error:NULL]) {
+                    if ([self.fileManager moveItemAtPath:srcFilePath toPath:filePath error:NULL]) {
                         [[ACSCache sharedCache] storeAbsolutePath:filePath forURL:requester.URL];
                     }
                 }
                 
-                fileData = [[NSFileManager defaultManager] contentsAtPath:filePath];
+                fileData = [self.fileManager contentsAtPath:filePath];
             }
             id resultData = nil;
             if (fileData) {

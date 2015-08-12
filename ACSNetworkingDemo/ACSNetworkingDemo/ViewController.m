@@ -14,7 +14,7 @@ void ACPrintRunTime(void (^codeBlock)(CFAbsoluteTime startTime)) {
     assert(codeBlock);
     CFAbsoluteTime startTime = CFAbsoluteTimeGetCurrent();
     codeBlock(startTime);
-    printf("运行时间：%f", CFAbsoluteTimeGetCurrent() - startTime);
+    printf("运行时间：%f\n", CFAbsoluteTimeGetCurrent() - startTime);
 }
 
 @interface ViewController () <ACSURLRequesterDelegate>
