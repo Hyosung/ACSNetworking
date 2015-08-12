@@ -25,6 +25,43 @@
 #ifndef __ACSNETWORKING__
 #define __ACSNETWORKING__
 
+/**
+ How to use?
+ 
+ AppDelegate.m -> application:didFinishLaunchingWithOptions:
+ [ACSNetworkConfiguration defaultConfiguration].baseURL = [NSURL URLWithString:@"http://example.com"];
+ [ACSNetworkConfiguration defaultConfiguration].downloadFolderName = @"MyDownload";
+ [ACSNetworkConfiguration defaultConfiguration].downloadExpirationTimeInterval = 60.0 * 60.0 * 24.0; //One day
+ [ACSNetworkConfiguration defaultConfiguration].timeoutInterval = 60.0; //One minute
+ [ACSNetworkConfiguration defaultConfiguration].cacheExpirationTimeInterval = 60.0 * 2; //Two minutes
+ 
+ /------------------------/
+ GET Request
+ 
+ [[ACSRequestManager sharedManager] fetchDataFromRequester:ACSCreateGETRequester(@"path", @{@"key": @"value"}, ^(id result, NSError *error) {
+ 
+ })];
+ 
+ POST Request
+ 
+ [[ACSRequestManager sharedManager] fetchDataFromRequester:ACSCreatePOSTRequester(@"path", @{@"key": @"value"}, ^(id result, NSError *error) {
+ 
+ })];
+ 
+ Upload File (fileValue Supported formats NSURL/NSString/UIImage/NSData)
+ 
+ [[ACSRequestManager sharedManager] uploadFileFromRequester:ACSCreateUploader(@"uploadFile", @{@"fileKey": @"fileValue"}, ^(ACSRequestProgress progress, id result, NSError *error) {
+ 
+ })];
+ 
+ Download File 
+ 
+ [[ACSRequestManager sharedManager] downloadFileFromRequester:ACSCreateDownloader(@"downloadFile", ^(ACSRequestProgress progress, id result, NSError *error) {
+ 
+ })];
+ 
+ **/
+
 #import "ACSCache.h"
 #import "ACSNetworkConfiguration.h"
 #import "ACSNetworkReachabilityManager.h"

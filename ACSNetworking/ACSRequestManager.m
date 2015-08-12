@@ -39,6 +39,9 @@
 #import <AppKit/AppKit.h>
 #endif
 
+NSString *const ACSNetworkingErrorDomain = @"com.stoney.ACSNetworkingErrorDomain";
+NSString *const ACSNetworkingErrorDescriptionKey = @"ACSNetworkingErrorDescriptionKey";
+
 @interface ACSRequestManager ()
 
 #ifdef _AFNETWORKING_
@@ -108,6 +111,18 @@ ACSNETWORK_STATIC_INLINE NSData * ACSFileDataFromPath(NSString *path) {
     return [[NSFileManager defaultManager] contentsAtPath:path];
 }
 
+ACSNETWORK_STATIC_INLINE unsigned long long ACSFileSizeFromPath(NSString *path) {
+    unsigned long long fileSize = 0;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+        NSError *error = nil;
+        NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:&error];
+        if (!error && fileAttributes) {
+            fileSize = [fileAttributes fileSize];
+        }
+    }
+    return fileSize;
+}
+
 ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType) {
     
 #ifdef __UTTYPE__
@@ -171,24 +186,28 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
     [self.operations removeObjectForKey:identifier];
 }
 
-- (void)pauseOperationWithIdentifier:(NSString *) identifier {
+- (BOOL)pauseOperationWithIdentifier:(NSString *) identifier {
     if (!identifier) {
-        return;
+        return NO;
     }
     AFHTTPRequestOperation *operation = [self.operations objectForKey:identifier];
-    if (!(operation && ![operation isPaused])) {
-        return;
+    if (!operation || [operation isPaused]) {
+        return NO;
     }
     [operation pause];
+    return YES;
 }
 
-- (void)resumeOperationWithIdentifier:(NSString *) identifier {
-    if (identifier) {
-        AFHTTPRequestOperation *operation = [self.operations objectForKey:identifier];
-        if (operation && [operation isPaused]) {
-            [operation resume];
-        }
+- (BOOL)resumeOperationWithIdentifier:(NSString *) identifier {
+    if (!identifier) {
+        return NO;
     }
+    AFHTTPRequestOperation *operation = [self.operations objectForKey:identifier];
+    if (!operation || ![operation isPaused]) {
+        return NO;
+    }
+    [operation resume];
+    return YES;
 }
 
 - (BOOL)isPausedOperationWithIdentifier:(NSString *) identifier {
@@ -243,6 +262,17 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
         if (requester.completionBlock) {
             requester.completionBlock(tempResult, nil);
         }
+        
+        if (requester.delegate) {
+            if ([requester.delegate respondsToSelector:@selector(request:didReceiveData:)]) {
+                [requester.delegate request:requester didReceiveData:tempResult];
+            }
+            
+            if ([requester.delegate respondsToSelector:@selector(requestDidFinishLoading:)]) {
+                [requester.delegate requestDidFinishLoading:requester];
+            }
+        }
+        
         return nil;
     }
     
@@ -268,15 +298,27 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
                                                                               success:[self requestSuccess:requester]
                                                                               failure:[self requestFailure:requester]];
     
-    if (requester.progressBlock) {
-        [operation setUploadProgressBlock:^(NSUInteger bytesWritten,
-                                            long long totalBytesWritten,
-                                            long long totalBytesExpectedToWrite) {
-            requester.progressBlock(ACSRequestProgressMake(bytesWritten,
-                                                           totalBytesWritten,
-                                                           totalBytesExpectedToWrite), nil, nil);
-        }];
-    }
+    
+    __weak __typeof(requester) wrequester = requester;
+    [operation setUploadProgressBlock:^(NSUInteger bytesWritten,
+                                        long long totalBytesWritten,
+                                        long long totalBytesExpectedToWrite) {
+        __strong __typeof(wrequester) srequester = wrequester;
+        if (srequester) {
+            
+            if (srequester.progressBlock) {
+                srequester.progressBlock(ACSRequestProgressMake(bytesWritten,
+                                                                totalBytesWritten,
+                                                                totalBytesExpectedToWrite), nil, nil);
+            }
+            
+            if (srequester.delegate) {
+                if ([srequester.delegate respondsToSelector:@selector(request:didFileProgressing:)]) {
+                    [srequester.delegate request:srequester didFileProgressing:ACSRequestProgressMake(bytesWritten, totalBytesWritten, totalBytesExpectedToWrite)];
+                }
+            }
+        }
+    }];
     
     [self.manager.operationQueue addOperation:operation];
     NSString *operationIdentifier = ACSGenerateOperationIdentifier();
@@ -311,30 +353,64 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
         if (requester.progressBlock) {
             requester.progressBlock(ACSRequestProgressZero, resultData, nil);
         }
+        
+        if (requester.delegate) {
+            if ([requester.delegate respondsToSelector:@selector(request:didReceiveData:)]) {
+                [requester.delegate request:requester didReceiveData:resultData];
+            }
+            
+            if ([requester.delegate respondsToSelector:@selector(requestDidFinishLoading:)]) {
+                [requester.delegate requestDidFinishLoading:requester];
+            }
+        }
+        
         return nil;
+    }
+    
+    NSString *tmpPath = ACSFilePathFromURL(URLRequest.URL, NSTemporaryDirectory(), @"tmp");
+    
+    //获取已下载的大小
+    unsigned long long downloadedBytes = ACSFileSizeFromPath(tmpPath);
+    BOOL isAppend = NO;
+    if (downloadedBytes > 0) {
+        //设置请求头 请求downloadedBytes字节以后的范围
+        NSString *requestRange = [NSString stringWithFormat:@"bytes=%llu-", downloadedBytes];
+        [URLRequest setValue:requestRange forHTTPHeaderField:@"Range"];
+        isAppend = YES;
     }
     
     AFHTTPRequestOperation *operation = [self.manager HTTPRequestOperationWithRequest:URLRequest
                                                                               success:[self requestSuccess:requester]
                                                                               failure:[self requestFailure:requester]];
+    operation.outputStream = [NSOutputStream outputStreamToFileAtPath:tmpPath append:isAppend];
     
-    filePath = ACSFilePathFromURL(URLRequest.URL, [ACSNetworkConfiguration defaultConfiguration].downloadFolder, nil);
-    
-    operation.outputStream = [NSOutputStream outputStreamToFileAtPath:filePath append:NO];
-    
-    if (requester.progressBlock) {
-        
-        __weak __typeof__(operation) weakOperation = operation;
-        [operation setDownloadProgressBlock:^(NSUInteger bytesRead,
-                                              long long totalBytesRead,
-                                              long long totalBytesExpectedToRead) {
-            if (weakOperation.response.statusCode == 200) {
-                requester.progressBlock(ACSRequestProgressMake(bytesRead,
-                                                               totalBytesRead,
-                                                               totalBytesExpectedToRead), nil, nil);
+    __weak __typeof__(operation) woperation = operation;
+    __weak __typeof(requester) wrequester = requester;
+    [operation setDownloadProgressBlock:^(NSUInteger bytesRead,
+                                          long long totalBytesRead,
+                                          long long totalBytesExpectedToRead) {
+        __strong __typeof(woperation) soperation = woperation;
+        if (soperation) {
+            NSInteger statusCode = woperation.response.statusCode;
+            if (statusCode == 200 || statusCode == 206) {
+                __strong __typeof(wrequester) srequester = wrequester;
+                if (srequester) {
+                    
+                    if (srequester.progressBlock) {
+                        
+                        srequester.progressBlock(ACSRequestProgressMake(bytesRead,
+                                                                        totalBytesRead,
+                                                                        totalBytesExpectedToRead), nil, nil);
+                    }
+                    if (srequester.delegate) {
+                        if ([srequester.delegate respondsToSelector:@selector(request:didFileProgressing:)]) {
+                            [srequester.delegate request:srequester didFileProgressing:ACSRequestProgressMake(bytesRead, totalBytesRead, totalBytesExpectedToRead)];
+                        }
+                    }
+                }
             }
-        }];
-    }
+        }
+    }];
     
     [self.manager.operationQueue addOperation:operation];
     
@@ -454,24 +530,44 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
             if (((ACSURLHTTPRequester *)requester).completionBlock) {
                 ((ACSURLHTTPRequester *)requester).completionBlock(resultObject, error);
             }
+            
+            if (requester.delegate) {
+                if ([requester.delegate respondsToSelector:@selector(request:didReceiveData:)] && resultObject) {
+                    [requester.delegate request:requester didReceiveData:resultObject];
+                }
+                
+                if ([requester.delegate respondsToSelector:@selector(request:didFailWithError:)] && error) {
+                    [requester.delegate request:requester didFailWithError:error];
+                }
+                
+                if ([requester.delegate respondsToSelector:@selector(requestDidFinishLoading:)]) {
+                    [requester.delegate requestDidFinishLoading:requester];
+                }
+            }
         }
         else if ([requester isKindOfClass:[ACSFileDownloader class]]) {
-            //获取后缀
-            NSString *extension = ACSExtensionFromMIMEType(operation.response.MIMEType);
-            //下载路径
-            NSString *filePath = ACSFilePathFromURL(requester.URL, [ACSNetworkConfiguration defaultConfiguration].downloadFolder, extension);
-            NSString *srcFilePath = [filePath stringByDeletingPathExtension];
-            
-            //删除已存在的文件以便于后面的移动操作
-            if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
-                [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
+            NSString *filePath;
+            NSData *fileData;
+            @synchronized(requester) {
+                //获取后缀
+                NSString *extension = ACSExtensionFromMIMEType(operation.response.MIMEType);
+                //下载路径
+                filePath = ACSFilePathFromURL(requester.URL, [ACSNetworkConfiguration defaultConfiguration].downloadFolder, extension);
+                NSString *srcFilePath = ACSFilePathFromURL(requester.URL, NSTemporaryDirectory(), @"tmp");
+                //删除已存在的文件以便于后面的移动操作
+                if ([[NSFileManager defaultManager] fileExistsAtPath:srcFilePath]) {
+                    
+                    if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+                        [[NSFileManager defaultManager] removeItemAtPath:filePath error:NULL];
+                    }
+                    //移动
+                    if ([[NSFileManager defaultManager] moveItemAtPath:srcFilePath toPath:filePath error:NULL]) {
+                        [[ACSCache sharedCache] storeAbsolutePath:filePath forURL:requester.URL];
+                    }
+                }
+                
+                fileData = [[NSFileManager defaultManager] contentsAtPath:filePath];
             }
-            //移动
-            if ([[NSFileManager defaultManager] moveItemAtPath:srcFilePath toPath:filePath error:nil]) {
-                [[ACSCache sharedCache] storeAbsolutePath:filePath forURL:requester.URL];
-            }
-            
-            NSData *fileData = [[NSFileManager defaultManager] contentsAtPath:filePath];
             id resultData = nil;
             if (fileData) {
                 if (requester.responseType == ACSResponseTypeFilePath) {
@@ -492,6 +588,16 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
             if (((ACSFileDownloader *)requester).progressBlock) {
                 ((ACSFileDownloader *)requester).progressBlock(ACSRequestProgressZero, resultData, nil);
             }
+            if (requester.delegate) {
+                if ([requester.delegate respondsToSelector:@selector(request:didReceiveData:)] && resultData) {
+                    [requester.delegate request:requester didReceiveData:resultData];
+                }
+                
+                if ([requester.delegate respondsToSelector:@selector(request:didFailWithError:)] && !resultData) {
+                    NSError *error = [NSError errorWithDomain:ACSNetworkingErrorDomain code:ACSNetworkingErrorCodeEmptyData userInfo:@{ACSNetworkingErrorDescriptionKey: @"Empty Data"}];
+                    [requester.delegate request:requester didFailWithError:error];
+                }
+            }
         }
         else if ([requester isKindOfClass:[ACSFileUploader class]]) {
             NSError *error = nil;
@@ -505,6 +611,22 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
             
             if (((ACSFileUploader *)requester).progressBlock) {
                 ((ACSFileUploader *)requester).progressBlock(ACSRequestProgressZero, resultObject, error);
+            }
+            
+            if (requester.delegate) {
+                if ([requester.delegate respondsToSelector:@selector(request:didReceiveData:)] && resultObject) {
+                    [requester.delegate request:requester didReceiveData:resultObject];
+                }
+                
+                if ([requester.delegate respondsToSelector:@selector(request:didFailWithError:)] && error) {
+                    [requester.delegate request:requester didFailWithError:error];
+                }
+            }
+        }
+        
+        if (requester.delegate) {
+            if ([requester.delegate respondsToSelector:@selector(requestDidFinishLoading:)]) {
+                [requester.delegate requestDidFinishLoading:requester];
             }
         }
     };
@@ -520,20 +642,39 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
         }
         
         if ([requester isKindOfClass:[ACSURLHTTPRequester class]]) {
+            id resultObject = nil;
+            if (((ACSURLHTTPRequester *)requester).cacheResponseData &&
+                ((ACSURLHTTPRequester *)requester).method == ACSRequestMethodGET) {
+                resultObject = [[ACSCache sharedCache] fetchDataFromDiskCacheForURL:requester.URL];
+            }
             if (((ACSURLHTTPRequester *)requester).completionBlock) {
-                
-                id resultObject = nil;
-                if (((ACSURLHTTPRequester *)requester).cacheResponseData &&
-                    ((ACSURLHTTPRequester *)requester).method == ACSRequestMethodGET) {
-                    resultObject = [[ACSCache sharedCache] fetchDataFromDiskCacheForURL:requester.URL];
-                }
                 ((ACSURLHTTPRequester *)requester).completionBlock(resultObject, resultObject ? nil : error);
+            }
+            
+            if (requester.delegate) {
+                if ([requester.delegate respondsToSelector:@selector(request:didReceiveData:)] && resultObject) {
+                    [requester.delegate request:requester didReceiveData:resultObject];
+                }
+                
+                if ([requester.delegate respondsToSelector:@selector(request:didFailWithError:)] && error) {
+                    [requester.delegate request:requester didFailWithError:error];
+                }
             }
         }
         else if ([requester isKindOfClass:[ACSFileUploader class]] ||
                  [requester isKindOfClass:[ACSFileDownloader class]]) {
             if (((id <ACSURLFileRequest>)requester).progressBlock) {
                 ((id <ACSURLFileRequest>)requester).progressBlock(ACSRequestProgressZero, nil, error);
+            }
+            if (requester.delegate) {
+                if ([requester.delegate respondsToSelector:@selector(request:didFailWithError:)]) {
+                    [requester.delegate request:requester didFailWithError:error];
+                }
+            }
+        }
+        if (requester.delegate) {
+            if ([requester.delegate respondsToSelector:@selector(requestDidFinishLoading:)]) {
+                [requester.delegate requestDidFinishLoading:requester];
             }
         }
     };

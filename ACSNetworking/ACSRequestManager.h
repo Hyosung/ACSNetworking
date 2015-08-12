@@ -28,6 +28,13 @@
 @class ACSFileDownloader;
 @class ACSURLHTTPRequester;
 
+typedef NS_ENUM(NSUInteger, ACSNetworkingErrorCode) {
+    ACSNetworkingErrorCodeEmptyData = 0
+};
+
+extern NSString *const ACSNetworkingErrorDomain;
+extern NSString *const ACSNetworkingErrorDescriptionKey;
+
 @interface ACSRequestManager : NSObject
 
 #ifdef _AFNETWORKING_
@@ -35,8 +42,23 @@
 
 - (void)cancelAllOperations;
 - (void)cancelOperationWithIdentifier:(NSString *) identifier;
-- (void)pauseOperationWithIdentifier:(NSString *) identifier;
-- (void)resumeOperationWithIdentifier:(NSString *) identifier;
+/**
+ 暂停请求
+ 
+ @param identifier 请求的标识
+ 
+ @return 是否暂停成功（无这个请求/请求没有开始/请求已暂停 都会返回NO）
+ */
+- (BOOL)pauseOperationWithIdentifier:(NSString *) identifier;
+
+/**
+ 恢复请求
+ 
+ @param identifier 请求的标识
+ 
+ @return 是否恢复成功（无这个请求/请求没有开始/请求未暂停 都会返回NO）
+ */
+- (BOOL)resumeOperationWithIdentifier:(NSString *) identifier;
 - (BOOL)isPausedOperationWithIdentifier:(NSString *) identifier;
 - (BOOL)isExecutingOperationWithIdentifier:(NSString *) identifier;
 
@@ -56,7 +78,7 @@
  
  @return operation identifier
  */
-- (NSString *)uploadFileFromRequester:(ACSFileUploader *) requester;
+- (NSString *)uploadFileFromRequester:(ACSFileUploader *) requester; 
 
 /**
  下载文件

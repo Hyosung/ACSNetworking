@@ -35,9 +35,11 @@
 @synthesize URL = _URL;
 @synthesize path = _path;
 @synthesize method = _method;
+@synthesize delegate = _delegate;
 @synthesize parameters = _parameters;
 @synthesize responseType = _responseType;
 @synthesize progressBlock = _progressBlock;
+@synthesize operationManager = _operationManager;
 
 - (ACSRequestMethod)method {
     if (_method == ACSRequestMethodGET || _method == ACSRequestMethodHEAD) {
@@ -48,6 +50,7 @@
 
 #ifdef _AFNETWORKING_
 - (NSMutableURLRequest *)URLRequestFormOperationManager:(AFHTTPRequestOperationManager *)operationManager {
+    _operationManager = operationManager;
     NSURL *__weak tempURL = self.URL ?: [NSURL URLWithString:self.path ?: @""
                                                relativeToURL:operationManager.baseURL];
     self.URL = tempURL;

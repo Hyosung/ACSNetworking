@@ -24,15 +24,17 @@
 
 #import "ACSNetworkReachabilityManager.h"
 
-#if TARGET_OS_IPHONE
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
 #import <UIKit/UIDevice.h>
+#import <CoreTelephony/CTTelephonyNetworkInfo.h>
+#else
 #endif
+
 #import <netinet/in.h>
 #import <netinet6/in6.h>
 #import <arpa/inet.h>
 #import <ifaddrs.h>
 #import <netdb.h>
-#import <CoreTelephony/CTTelephonyNetworkInfo.h>
 
 NSString * const ACSNetworkingReachabilityDidChangeNotification = @"com.stoney.networking.reachability.change";
 NSString * const ACSNetworkingReachabilityNotificationStatusItem = @"ACSNetworkingReachabilityNotificationStatusItem";
@@ -92,7 +94,9 @@ static ACSNetworkReachabilityStatus ACSNetworkReachabilityStatusForFlags(SCNetwo
                 if ([currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyLTE]) {
                     status = ACSNetworkReachabilityStatusReachableVia4G;
                 }
-                else if ([currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyEdge] || [currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyGPRS]) {
+                else if ([currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyEdge] ||
+                         [currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyGPRS] ||
+                         [currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyCDMA1x]) {
                     status = ACSNetworkReachabilityStatusReachableVia2G;
                 }
                 else {

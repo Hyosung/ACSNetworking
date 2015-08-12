@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14E46" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
         <scene sceneID="ufC-wZ-h7g">
             <objects>
-                <viewController id="vXZ-lx-hvc" customClass="ViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="viewcontroller" id="vXZ-lx-hvc" customClass="ViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="jyV-Pf-zRb"/>
                         <viewControllerLayoutGuide type="bottom" id="2fi-mo-0CV"/>
@@ -92,9 +91,9 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <connections>
-                        <outlet property="ac_MP3Label" destination="cO9-WV-eU7" id="z6v-4v-7gc"/>
-                        <outlet property="ac_MP3ProgressView" destination="hKb-pr-a1G" id="0G6-LO-n8d"/>
                         <outlet property="ac_imageView" destination="5Fx-yN-CJZ" id="CsB-LO-nNs"/>
+                        <outlet property="ac_mp3Label" destination="cO9-WV-eU7" id="7kz-Ri-dZr"/>
+                        <outlet property="ac_mp3ProgressView" destination="hKb-pr-a1G" id="PC4-Iu-l5J"/>
                         <outlet property="ac_progressView" destination="mHj-l7-xxA" id="UoM-kG-Nub"/>
                     </connections>
                 </viewController>

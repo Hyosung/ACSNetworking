@@ -32,7 +32,12 @@
 #import "ACSCache.h"
 
 #import <CommonCrypto/CommonDigest.h>
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
 #import <MobileCoreServices/MobileCoreServices.h>
+#else
+#import <CoreServices/CoreServices.h>
+#import <AppKit/AppKit.h>
+#endif
 
 @interface ACSRequestManager ()
 
@@ -104,6 +109,8 @@ ACSNETWORK_STATIC_INLINE NSData * ACSFileDataFromPath(NSString *path) {
 }
 
 ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType) {
+    
+#ifdef __UTTYPE__
     CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, (__bridge CFStringRef)MIMEType, NULL);
     CFStringRef filenameExtension = UTTypeCopyPreferredTagWithClass(UTI, kUTTagClassFilenameExtension);
     CFRelease(UTI);
@@ -111,6 +118,10 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
         return @"";
     }
     return CFBridgingRelease(filenameExtension);
+#else
+#pragma unused (MIMEType)
+    return @"";
+#endif
 }
 
 #ifdef _AFNETWORKING_
@@ -291,7 +302,6 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
 #if TARGET_OS_IPHONE
             resultData = [UIImage imageWithData:fileData];
 #else
-            
             resultData = [[NSImage alloc] initWithData:fileData];
 #endif
         }
@@ -313,16 +323,21 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
     operation.outputStream = [NSOutputStream outputStreamToFileAtPath:filePath append:NO];
     
     if (requester.progressBlock) {
+        
+        __weak __typeof__(operation) weakOperation = operation;
         [operation setDownloadProgressBlock:^(NSUInteger bytesRead,
                                               long long totalBytesRead,
                                               long long totalBytesExpectedToRead) {
-            requester.progressBlock(ACSRequestProgressMake(bytesRead,
-                                                           totalBytesRead,
-                                                           totalBytesExpectedToRead), nil, nil);
+            if (weakOperation.response.statusCode == 200) {
+                requester.progressBlock(ACSRequestProgressMake(bytesRead,
+                                                               totalBytesRead,
+                                                               totalBytesExpectedToRead), nil, nil);
+            }
         }];
     }
     
     [self.manager.operationQueue addOperation:operation];
+    
     NSString *operationIdentifier = ACSGenerateOperationIdentifier();
     [self.operations setObject:operation forKey:operationIdentifier];
     
@@ -466,7 +481,6 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
 #if TARGET_OS_IPHONE
                     resultData = [UIImage imageWithData:fileData];
 #else
-                    
                     resultData = [[NSImage alloc] initWithData:fileData];
 #endif
                 }

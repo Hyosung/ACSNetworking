@@ -38,27 +38,51 @@
  /------------------------/
  GET Request
  
+ ------>Block
  [[ACSRequestManager sharedManager] fetchDataFromRequester:ACSCreateGETRequester(@"path", @{@"key": @"value"}, ^(id result, NSError *error) {
  
  })];
  
+ ------>Delegate
+ ACSURLHTTPRequester *requester = ACSCreateGETRequester(@"path", @{@"key": @"value"}, NULL);
+ requester.delegate = self;
+ [[ACSRequestManager sharedManager] fetchDataFromRequester:requester];
+ 
  POST Request
  
+ ------>Block
  [[ACSRequestManager sharedManager] fetchDataFromRequester:ACSCreatePOSTRequester(@"path", @{@"key": @"value"}, ^(id result, NSError *error) {
  
  })];
  
+ ------>Delegate
+ ACSURLHTTPRequester *requester = ACSCreatePOSTRequester(@"path", @{@"key": @"value"}, NULL);
+ requester.delegate = self;
+ [[ACSRequestManager sharedManager] fetchDataFromRequester:requester];
+ 
  Upload File (fileValue Supported formats NSURL/NSString/UIImage/NSData)
  
+ ------>Block
  [[ACSRequestManager sharedManager] uploadFileFromRequester:ACSCreateUploader(@"uploadFile", @{@"fileKey": @"fileValue"}, ^(ACSRequestProgress progress, id result, NSError *error) {
  
  })];
  
+ ------>Delegate
+ ACSFileUploader *uploader = ACSCreateUploader(@"uploadFile", @{@"fileKey": @"fileValue"}, NULL);
+ uploader.delegate = self;
+ [[ACSRequestManager sharedManager] fetchDataFromRequester:uploader];
+ 
  Download File 
  
+ ------>Block
  [[ACSRequestManager sharedManager] downloadFileFromRequester:ACSCreateDownloader(@"downloadFile", ^(ACSRequestProgress progress, id result, NSError *error) {
  
  })];
+ 
+ ------>Delegate
+ ACSFileDownloader *downloader = ACSCreateDownloader(@"downloadFile", NULL);
+ downloader.delegate = self;
+ [[ACSRequestManager sharedManager] fetchDataFromRequester:downloader];
  
  **/
 

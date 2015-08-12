@@ -1,4 +1,4 @@
-// ACSURLHTTPRequest.h
+// ACSURLRequesterDelegate.h
 // ACSNetworking
 //
 // Created by Stoney on 8/4/15.
@@ -22,37 +22,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "ACSNetworkPrivate.h"
-#import "ACSURLRequesterDelegate.h"
+#import <Foundation/Foundation.h>
 
-@protocol ACSURLHTTPRequest <NSObject>
+@protocol ACSURLHTTPRequest;
+@protocol ACSURLFileRequest;
 
-/**
- 响应的结果的类型 默认data
- */
-@property ACSResponseType responseType;
+@protocol ACSURLRequesterDelegate <NSObject>
 
-/**
- 请求的URL
- */
-@property (copy) NSURL *URL;
+@optional
 
-/**
- 请求的路径 相对路径
- */
-@property (copy) NSString *path;
+- (void)request:(id <ACSURLHTTPRequest>) requester didReceiveData:(id) data;
+- (void)request:(id <ACSURLHTTPRequest>) requester didFailWithError:(NSError *) error;
+- (void)request:(id <ACSURLFileRequest>) requester didFileProgressing:(ACSRequestProgress) progress;
+- (void)requestDidFinishLoading:(id <ACSURLHTTPRequest>) requester;
 
-/**
- 请求方式
- */
-@property ACSRequestMethod method;
-
-@property (nonatomic, weak) id <ACSURLRequesterDelegate> delegate;
-
-@property (nonatomic, copy) NSDictionary *parameters;
-
-#ifdef _AFNETWORKING_
-@property (nonatomic, weak, readonly) AFHTTPRequestOperationManager *operationManager;
-- (NSMutableURLRequest *)URLRequestFormOperationManager:(AFHTTPRequestOperationManager *) operationManager;
-#endif
 @end

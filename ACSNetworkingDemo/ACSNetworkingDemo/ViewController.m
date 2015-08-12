@@ -14,17 +14,17 @@ void ACPrintRunTime(void (^codeBlock)(CFAbsoluteTime startTime)) {
     assert(codeBlock);
     CFAbsoluteTime startTime = CFAbsoluteTimeGetCurrent();
     codeBlock(startTime);
-    NSLog(@"运行时间：%f", CFAbsoluteTimeGetCurrent() - startTime);
+    printf("运行时间：%f", CFAbsoluteTimeGetCurrent() - startTime);
 }
 
-@interface ViewController ()
+@interface ViewController () <ACSURLRequesterDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *ac_imageView;
 @property (weak, nonatomic) IBOutlet UIProgressView *ac_progressView;
-@property (weak, nonatomic) IBOutlet UIProgressView *ac_MP3ProgressView;
-@property (weak, nonatomic) IBOutlet UILabel *ac_MP3Label;
+@property (weak, nonatomic) IBOutlet UIProgressView *ac_mp3ProgressView;
+@property (weak, nonatomic) IBOutlet UILabel *ac_mp3Label;
 
 @property (nonatomic, copy) NSString *downloadIdentifier;
-@property (nonatomic, copy) NSString *MP3Identifier;
+@property (nonatomic, copy) NSString *mp3Identifier;
 
 @end
 
@@ -36,36 +36,54 @@ void ACPrintRunTime(void (^codeBlock)(CFAbsoluteTime startTime)) {
 }
 
 - (IBAction)beginDownloadMP3:(UIButton *)sender {
-    
-    if ([[ACSRequestManager sharedManager] isPausedOperationWithIdentifier:self.MP3Identifier]) {
-        [[ACSRequestManager sharedManager] resumeOperationWithIdentifier:self.MP3Identifier];
+   
+    if ([[ACSRequestManager sharedManager] isPausedOperationWithIdentifier:self.mp3Identifier]) {
+        [[ACSRequestManager sharedManager] resumeOperationWithIdentifier:self.mp3Identifier];
     }
     else {
-        self.ac_MP3Label.text = @"下载中";
-        NSURL *URL = [NSURL URLWithString:@"http://music.baidu.com/data/music/file?link=http://yinyueshiting.baidu.com/data2/music/245838837/245838806223200128.mp3?xcode=b34776036c683819d7984b79751f9d39&song_id=245838806"];
-        self.MP3Identifier = [[ACSRequestManager sharedManager] downloadFileFromRequester:ACSCreateDownloader(URL, ^(ACSRequestProgress progress, NSString *mp3Path, NSError *error) {
+        self.ac_mp3Label.text = @"下载中";
+        NSURL *URL = [NSURL URLWithString:@"http://music.baidu.com/data/music/file?link=http://yinyueshiting.baidu.com/data2/music/246411127/245838806223200128.mp3?xcode=af56b960e8990ab0f4316fffb8ff8771&song_id=245838806"];
+        ACSFileDownloader *downloader = ACSCreateDownloader(URL, ^(ACSRequestProgress progress, NSString *mp3Path, NSError *error) {
             if (error) {
-                self.ac_MP3Label.text = @"下载失败";
+                self.ac_mp3Label.text = @"下载失败";
             }
             else {
                 if (!mp3Path) {
-                    self.ac_MP3ProgressView.progress = (CGFloat)progress.totalBytes / (CGFloat)progress.totalBytesExpected;
+                    self.ac_mp3ProgressView.progress = (CGFloat)progress.totalBytes / (CGFloat)progress.totalBytesExpected;
                 }
                 else {
-                    self.ac_MP3Label.text = @"下载完成";
+                    self.ac_mp3Label.text = @"下载完成";
                 }
             }
-        })];
+        });
+        downloader.delegate = self;
+        self.mp3Identifier = [[ACSRequestManager sharedManager] downloadFileFromRequester:downloader];
     }
 }
 
+- (void)request:(id<ACSURLHTTPRequest>)requester didReceiveData:(id)data {
+    NSLog(@"%@", data);
+}
+
+- (void)request:(id<ACSURLHTTPRequest>)requester didFailWithError:(NSError *)error {
+    NSLog(@"error%@", error);
+}
+
+- (void)request:(id<ACSURLFileRequest>)requester didFileProgressing:(ACSRequestProgress)progress {
+    NSLog(@"%lu, %lld, %lld", (unsigned long)progress.bytes, progress.totalBytes, progress.totalBytesExpected);
+}
+
+- (void)requestDidFinishLoading:(id<ACSURLHTTPRequest>)requester {
+    NSLog(@"加载完成");
+}
+
 - (IBAction)pauseDownloadMP3:(UIButton *)sender {
-    if (![[ACSRequestManager sharedManager] isExecutingOperationWithIdentifier:self.MP3Identifier]) {
+    if (![[ACSRequestManager sharedManager] isExecutingOperationWithIdentifier:self.mp3Identifier]) {
         return;
     }
     
-    [[ACSRequestManager sharedManager] pauseOperationWithIdentifier:self.MP3Identifier];
-    self.ac_MP3Label.text = @"暂停中";
+    [[ACSRequestManager sharedManager] pauseOperationWithIdentifier:self.mp3Identifier];
+    self.ac_mp3Label.text = @"暂停中";
 }
 
 - (IBAction)beginDownload:(UIButton *)sender {
@@ -75,10 +93,8 @@ void ACPrintRunTime(void (^codeBlock)(CFAbsoluteTime startTime)) {
                           @"http://img5q.duitang.com/uploads/item/201507/19/20150719142423_Tmwz5.jpeg",
                           @"http://img.wallba.com/data/Image/2012zwj/8yue/8-21/mxbz/tangyan/1/20128219928562.jpg",
                           @"http://i1.mopimg.cn/img/dzh/2015-01/410/20150120231848318.jpg",
-                          @"http://h.hiphotos.baidu.com/zhidao/pic/item/0d338744ebf81a4cbe1483bbd42a6059252da69a.jpg",
-                          @"http://img1.imgtn.bdimg.com/it/u=4285455535,4054079836&fm=21&gp=0.jpg"
+                          @"http://h.hiphotos.baidu.com/zhidao/pic/item/0d338744ebf81a4cbe1483bbd42a6059252da69a.jpg"
                           ];
-    
     if (![[ACSRequestManager sharedManager] isExecutingOperationWithIdentifier:self.downloadIdentifier]) {
         
         ACSFileDownloader *downloader = ACSCreateDownloader([NSURL URLWithString:URLStrings[4]], ^(ACSRequestProgress progress, UIImage *image, NSError *error) {

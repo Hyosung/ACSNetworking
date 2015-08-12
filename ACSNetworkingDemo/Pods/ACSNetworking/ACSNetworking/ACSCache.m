@@ -145,8 +145,8 @@ ACSNETWORK_STATIC_INLINE NSString * ACSCacheKeyForURL(NSURL *URL) {
     return [md5Ciphertext copy];
 }
 
-ACSNETWORK_STATIC_INLINE NSString * ACSDiskCachePathFromURL(NSURL *URL, NSString *diskFolder) {
-    assert(URL);
+ACSNETWORK_STATIC_INLINE NSString * ACSDiskCacheFilePath(NSString *pathComponent, NSString *diskFolder) {
+    assert(pathComponent);
     assert(diskFolder);
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:diskFolder]) {
@@ -155,7 +155,7 @@ ACSNETWORK_STATIC_INLINE NSString * ACSDiskCachePathFromURL(NSURL *URL, NSString
                                                    attributes:nil
                                                         error:NULL];
     }
-    return [diskFolder stringByAppendingPathComponent:ACSCacheKeyForURL(URL)];
+    return [diskFolder stringByAppendingPathComponent:pathComponent];
 }
 
 - (instancetype)init {
@@ -198,7 +198,7 @@ ACSNETWORK_STATIC_INLINE NSString * ACSDiskCachePathFromURL(NSURL *URL, NSString
     }
     
     // Second check the disk cache...
-    id diskObject = [NSKeyedUnarchiver unarchiveObjectWithFile:ACSDiskCachePathFromURL(URL, self.diskCachePath)];
+    id diskObject = [NSKeyedUnarchiver unarchiveObjectWithFile:ACSDiskCacheFilePath(ACSCacheKeyForURL(URL), self.diskCachePath)];
     if (diskObject) {
         [self setObject:diskObject forURL:URL toDisk:NO];
     }
@@ -219,10 +219,11 @@ ACSNETWORK_STATIC_INLINE NSString * ACSDiskCachePathFromURL(NSURL *URL, NSString
         return;
     }
     
-    [self.memoryCache setObject:obj forKey:ACSCacheKeyForURL(URL)];
+    NSString *cacheKey = ACSCacheKeyForURL(URL);
+    [self.memoryCache setObject:obj forKey:cacheKey];
     
     if (toDisk) {
-        NSString *filePath = ACSDiskCachePathFromURL(URL, self.diskCachePath);
+        NSString *filePath = ACSDiskCacheFilePath(cacheKey, self.diskCachePath);
         [NSKeyedArchiver archiveRootObject:obj toFile:filePath];
         if (attributes.count) {
             /**
@@ -240,7 +241,9 @@ ACSNETWORK_STATIC_INLINE NSString * ACSDiskCachePathFromURL(NSURL *URL, NSString
         return;
     }
     
-    [self.memoryCache removeObjectForKey:ACSCacheKeyForURL(URL)];
+    NSString *cacheKey = ACSCacheKeyForURL(URL);
+    [self.memoryCache removeObjectForKey:cacheKey];
+    [[NSFileManager defaultManager] removeItemAtPath:ACSDiskCacheFilePath(cacheKey, self.diskCachePath) error:nil];
 }
 
 - (void)cleanDiskMemory {
@@ -267,7 +270,7 @@ ACSNETWORK_STATIC_INLINE NSString * ACSDiskCachePathFromURL(NSURL *URL, NSString
         return object;
     }
     
-    ACSCachedObject *cacheObject = [NSKeyedUnarchiver unarchiveObjectWithFile:ACSDiskCachePathFromURL(URL, self.diskCachePath)];
+    ACSCachedObject *cacheObject = [NSKeyedUnarchiver unarchiveObjectWithFile:ACSDiskCacheFilePath(ACSCacheKeyForURL(URL), self.diskCachePath)];
     if (cacheObject.isExpiration) {
         return nil;
     }

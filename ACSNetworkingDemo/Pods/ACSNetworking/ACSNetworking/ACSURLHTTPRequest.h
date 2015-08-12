@@ -27,30 +27,22 @@
 @protocol ACSURLHTTPRequest <NSObject>
 
 /**
- *  @author Stoney, 15-07-31 09:07:48
- *
- *  @brief  响应的结果的类型 默认data
+ 响应的结果的类型 默认data
  */
 @property ACSResponseType responseType;
 
 /**
- *  @author Stoney, 15-07-31 09:07:46
- *
- *  @brief  请求的URL
+ 请求的URL
  */
 @property (copy) NSURL *URL;
 
 /**
- *  @author Stoney, 15-07-31 09:07:13
- *
- *  @brief  请求的路径
+ 请求的路径 相对路径
  */
 @property (copy) NSString *path;
 
 /**
- *  @author Stoney, 15-07-31 09:07:02
- *
- *  @brief  请求方式
+ 请求方式
  */
 @property ACSRequestMethod method;
 

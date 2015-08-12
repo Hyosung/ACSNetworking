@@ -28,7 +28,7 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   ACSNetworking:
-    :local: ../
+    :path: ../
 
 CHECKOUT OPTIONS:
   ACSNetworking:

@@ -34,10 +34,7 @@
 @synthesize progressBlock = _progressBlock;
 
 /**
- *  @author Stoney, 15-07-25 14:07:17
- *
- *  @brief  限死请求方式
- *
+ 限死请求方式
  */
 - (ACSRequestMethod)method {
     return ACSRequestMethodGET;

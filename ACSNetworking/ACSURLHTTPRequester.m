@@ -29,12 +29,14 @@
 @synthesize URL = _URL;
 @synthesize path = _path;
 @synthesize method = _method;
+@synthesize delegate = _delegate;
 @synthesize parameters = _parameters;
 @synthesize responseType = _responseType;
+@synthesize operationManager = _operationManager;
 
 #ifdef _AFNETWORKING_
-
 - (NSMutableURLRequest *)URLRequestFormOperationManager:(AFHTTPRequestOperationManager *)operationManager {
+    _operationManager = operationManager;
     NSURL *__weak tempURL = self.URL ?: [NSURL URLWithString:self.path ?: @"" relativeToURL:operationManager.baseURL];
     self.URL = tempURL;
     return [operationManager.requestSerializer requestWithMethod:ACSHTTPMethod(self.method)
