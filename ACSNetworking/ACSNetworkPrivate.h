@@ -43,6 +43,13 @@
 
 #define ACSNETWORK_STATIC_INLINE	 static inline
 
+#ifdef NS_ASSUME_NONNULL_BEGIN
+#define __ACSNonnull _Nonnull
+#else
+#define __ACSNonnull
+#endif
+
+
 typedef NS_ENUM(NSUInteger, ACSResponseType) {
     //未经过处理的数据
 //    ACSResponseTypeRaw = 0   ,
@@ -81,11 +88,12 @@ ACSNETWORK_STATIC_INLINE NSString * ACSHTTPMethod(ACSRequestMethod method) {
 
 typedef struct ACSRequestProgress {
     NSUInteger bytes;
+    CGFloat progressValue;
     long long totalBytes, totalBytesExpected;
 } ACSRequestProgress;
 
-ACSNETWORK_STATIC_INLINE ACSRequestProgress ACSRequestProgressMake(NSUInteger bytes, long long totalBytes, long long totalBytesExpected) {
-    ACSRequestProgress progress = {bytes, totalBytes, totalBytesExpected};
+ACSNETWORK_STATIC_INLINE ACSRequestProgress ACSRequestProgressMake(NSUInteger bytes, CGFloat progressValue, long long totalBytes, long long totalBytesExpected) {
+    ACSRequestProgress progress = {bytes, progressValue, totalBytes, totalBytesExpected};
     return progress;
 }
 
@@ -93,7 +101,7 @@ ACSNETWORK_STATIC_INLINE bool ACSRequestProgressIsEmpty(ACSRequestProgress progr
     return progress.bytes <= 0 && progress.totalBytes <= 0 && progress.totalBytesExpected <= 0;
 }
 
-#define ACSRequestProgressZero (ACSRequestProgress){0, 0, 0}
+#define ACSRequestProgressZero (ACSRequestProgress){0, 0.0, 0, 0}
 
 typedef void(^ACSRequestCompletionHandler)(id result, NSError *error);
 typedef void(^ACSRequestProgressHandler)(ACSRequestProgress progress, id result, NSError *error);

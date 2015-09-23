@@ -54,12 +54,12 @@
 /**
  取内存中的缓存数据
  */
-- (id)fetchDataFromMemoryCacheForURL:(NSURL *) URL;
+- (id)fetchDataFromMemoryCacheForURL:(NSURL *) URL cacheExpiration:(NSTimeInterval) timeInterval;
 
 /**
  取本地磁盘中的缓存对象
  */
-- (id)fetchDataFromDiskCacheForURL:(NSURL *) URL;
+- (id)fetchDataFromDiskCacheForURL:(NSURL *) URL cacheExpiration:(NSTimeInterval) timeInterval;
 
 /**
  存缓存数据

@@ -28,7 +28,6 @@
 #import <UIKit/UIApplication.h>
 #endif
 #import "ACSNetworkPrivate.h"
-#import "ACSNetworkConfiguration.h"
 #import <CommonCrypto/CommonDigest.h>
 
 @interface ACSCachedObject : NSObject <NSCoding>
@@ -39,17 +38,18 @@
 @property (nonatomic, readonly) NSDate *modificationDate;
 
 /**
- 缓存内存是否过期
- */
-@property (nonatomic, readonly, getter=isExpiration) BOOL expiration;
-
-/**
  缓存的内容
  */
 @property (nonatomic, strong, readonly) id content;
 
 - (instancetype)initWithContent:(id) content;
+
 - (void)updateContent:(id) content;
+
+/**
+ 缓存内存是否过期
+ */
+- (BOOL)isExpirationFromCacheExpiration:(NSTimeInterval) timeInterval;
 
 @end
 
@@ -83,9 +83,9 @@
     _modificationDate = [NSDate date];
 }
 
-- (BOOL)isExpiration {
+- (BOOL)isExpirationFromCacheExpiration:(NSTimeInterval) cacheTimeInterval {
     NSTimeInterval timeInterval = [[NSDate date] timeIntervalSinceDate:self.modificationDate];
-    return (timeInterval > [ACSNetworkConfiguration defaultConfiguration].cacheExpirationTimeInterval);
+    return (timeInterval > cacheTimeInterval);
 }
 
 @end
@@ -258,23 +258,26 @@ ACSNETWORK_STATIC_INLINE NSString * ACSDiskCacheFilePath(NSString *pathComponent
                                       error:NULL];
 }
 
-- (id)fetchDataFromMemoryCacheForURL:(NSURL *)URL {
+- (id)fetchDataFromMemoryCacheForURL:(NSURL *)URL
+                     cacheExpiration:(NSTimeInterval)timeInterval {
     ACSCachedObject *cacheObject = [self.memoryCache objectForKey:ACSCacheKeyForURL(URL)];
-    if (cacheObject.isExpiration) {
+    if ([cacheObject isExpirationFromCacheExpiration:timeInterval]) {
         return nil;
     }
     
     return cacheObject.content;
 }
 
-- (id)fetchDataFromDiskCacheForURL:(NSURL *)URL {
-    id object = [self fetchDataFromMemoryCacheForURL:URL];
+- (id)fetchDataFromDiskCacheForURL:(NSURL *)URL
+                   cacheExpiration:(NSTimeInterval)timeInterval {
+    id object = [self fetchDataFromMemoryCacheForURL:URL
+                                     cacheExpiration:timeInterval];
     if (object) {
         return object;
     }
     
     ACSCachedObject *cacheObject = [NSKeyedUnarchiver unarchiveObjectWithFile:ACSDiskCacheFilePath(ACSCacheKeyForURL(URL), self.diskCachePath)];
-    if (cacheObject.isExpiration) {
+    if ([cacheObject isExpirationFromCacheExpiration:timeInterval]) {
         return nil;
     }
     return cacheObject.content;

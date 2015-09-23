@@ -26,7 +26,17 @@
 
 @interface ACSFileDownloader : NSObject <ACSURLFileRequest>
 
+/**
+ A Boolean value that indicates if we should try to resume the download. Defaults is `YES`.
+ 
+ Can only be set while creating the request.
+ */
+@property (nonatomic, readonly, assign) BOOL shouldResume;
+
 @end
 
 extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSString *path, ACSRequestProgressHandler progressBlock);
 extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSURL *URL, ACSRequestProgressHandler progressBlock);
+
+extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSString *path, BOOL shouldResume, ACSRequestProgressHandler progressBlock);
+extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSURL *URL, BOOL shouldResume, ACSRequestProgressHandler progressBlock);

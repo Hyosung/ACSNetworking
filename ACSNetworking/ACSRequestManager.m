@@ -48,7 +48,6 @@ NSString *const ACSNetworkingErrorDescriptionKey = @"ACSNetworkingErrorDescripti
 @property (nonatomic, strong) ACSNetworkConfiguration *configuration;
 @property (nonatomic, strong) AFHTTPRequestOperationManager *manager;
 @property (nonatomic, weak  ) AFHTTPRequestSerializer <AFURLRequestSerialization> *rs;
-@property (nonatomic, strong) NSMapTable *operations;
 @property (nonatomic, strong) NSFileManager *fileManager;
 
 - (void (^)(AFHTTPRequestOperation *, id))requestSuccess:(id <ACSURLHTTPRequest>) requester;
@@ -59,17 +58,60 @@ NSString *const ACSNetworkingErrorDescriptionKey = @"ACSNetworkingErrorDescripti
 
 @implementation ACSRequestManager
 
+#pragma mark - Extern Method
+
+NSString * ACSFilePathFromURL(NSURL *URL, NSString *folderPath, NSString *extension) {
+    
+    assert(URL);
+    assert(folderPath);
+    
+    NSString *pathExtension = (extension && ![extension isEqualToString:@""]) ? [NSString stringWithFormat:@".%@", [extension lowercaseString]] : @"";
+    NSString *fileName = [NSString stringWithFormat:@"%@%@", ACSFileNameForURL(URL), pathExtension];
+    NSString *filePath = [folderPath stringByAppendingPathComponent:fileName];
+    return filePath;
+}
+
+NSData * ACSFileDataFromPath(NSString *path, NSTimeInterval downloadExpirationTimeInterval) {
+    NSFileManager *fileManager = [NSFileManager new];
+    if (![fileManager fileExistsAtPath:path]) {
+        return nil;
+    }
+    
+    NSDictionary *fileAttributes = [fileManager attributesOfItemAtPath:path error:nil];
+    if (fileAttributes) {
+        //判断文件是否过期
+        NSTimeInterval timeDifference = [[NSDate date] timeIntervalSinceDate:[fileAttributes fileModificationDate]];
+        if (timeDifference > downloadExpirationTimeInterval) {
+            return nil;
+        }
+    }
+    return [fileManager contentsAtPath:path];
+}
+
+unsigned long long ACSFileSizeFromPath(NSString *path) {
+    unsigned long long fileSize = 0;
+    NSFileManager *fileManager = [NSFileManager new];
+    if ([fileManager fileExistsAtPath:path]) {
+        NSError *error = nil;
+        NSDictionary *fileAttributes = [fileManager attributesOfItemAtPath:path error:&error];
+        if (!error && fileAttributes) {
+            fileSize = [fileAttributes fileSize];
+        }
+    }
+    return fileSize;
+}
+
 #pragma mark - Static inline
 
-/**
- *  @author Stoney, 15-07-31 09:07:27
- *
- *  @brief  生成请求的标识
- *
- */
-ACSNETWORK_STATIC_INLINE NSString * ACSGenerateOperationIdentifier() {
-    return [NSString stringWithFormat:@"%08x%08x", arc4random(), arc4random()];
-}
+///**
+// *  @author Stoney, 15-07-31 09:07:27
+// *
+// *  @brief  生成请求的标识
+// *
+// */
+//ACSNETWORK_STATIC_INLINE NSString * ACSGenerateOperationIdentifier() {
+//    return [NSString stringWithFormat:@"%08x%08x", arc4random(), arc4random()];
+//}
 
 ACSNETWORK_STATIC_INLINE NSString * ACSFileNameForURL(NSURL *URL) {
     const char *str = [URL.absoluteString UTF8String];
@@ -83,47 +125,6 @@ ACSNETWORK_STATIC_INLINE NSString * ACSFileNameForURL(NSURL *URL) {
         [md5Ciphertext appendFormat:@"%02x",r[i]];
     }
     return [md5Ciphertext copy];
-}
-
-ACSNETWORK_STATIC_INLINE NSString * ACSFilePathFromURL(NSURL *URL, NSString *folderPath, NSString *extension) {
-    
-    assert(URL);
-    assert(folderPath);
-    
-    NSString *pathExtension = extension ? [NSString stringWithFormat:@".%@", [extension lowercaseString]] : @"";
-    NSString *fileName = [NSString stringWithFormat:@"%@%@", ACSFileNameForURL(URL), pathExtension];
-    NSString *filePath = [folderPath stringByAppendingPathComponent:fileName];
-    return filePath;
-}
-
-ACSNETWORK_STATIC_INLINE NSData * ACSFileDataFromPath(NSString *path) {
-    NSFileManager *fileManager = [NSFileManager new];
-    if (![fileManager fileExistsAtPath:path]) {
-        return nil;
-    }
-    
-    NSDictionary *fileAttributes = [fileManager attributesOfItemAtPath:path error:nil];
-    if (fileAttributes) {
-        //判断文件是否过期
-        NSTimeInterval timeDifference = [[NSDate date] timeIntervalSinceDate:[fileAttributes fileModificationDate]];
-        if (timeDifference > [ACSNetworkConfiguration defaultConfiguration].downloadExpirationTimeInterval) {
-            return nil;
-        }
-    }
-    return [fileManager contentsAtPath:path];
-}
-
-ACSNETWORK_STATIC_INLINE unsigned long long ACSFileSizeFromPath(NSString *path) {
-    unsigned long long fileSize = 0;
-    NSFileManager *fileManager = [NSFileManager new];
-    if ([fileManager fileExistsAtPath:path]) {
-        NSError *error = nil;
-        NSDictionary *fileAttributes = [fileManager attributesOfItemAtPath:path error:&error];
-        if (!error && fileAttributes) {
-            fileSize = [fileAttributes fileSize];
-        }
-    }
-    return fileSize;
 }
 
 ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType) {
@@ -142,6 +143,16 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
 #endif
 }
 
+ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromContentType(NSString *contentType) {
+    
+    NSRange pointRange = [contentType rangeOfString:@"."options:NSBackwardsSearch];
+    if (pointRange.location == NSNotFound) {
+        return nil;
+    }
+    
+    return [contentType substringFromIndex:pointRange.location + 1];
+}
+
 #ifdef _AFNETWORKING_
 
 #pragma mark - Lifecycle
@@ -150,358 +161,122 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
     static ACSRequestManager *network = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        network = [[self alloc] init];
+        network = [[self alloc] initWithConfiguration:nil];
     });
     return network;
 }
 
-- (instancetype)init {
++ (instancetype)manager {
+    return [[self alloc] initWithConfiguration:nil];
+}
+
+- (instancetype)initWithConfiguration:(ACSNetworkConfiguration *)configuration {
     self = [super init];
     if (self) {
-        self.configuration = [ACSNetworkConfiguration defaultConfiguration];
+        self.configuration = configuration ?: [ACSNetworkConfiguration defaultConfiguration];
         
         self.manager = [[AFHTTPRequestOperationManager alloc] initWithBaseURL:self.configuration.baseURL];
-        self.manager.requestSerializer.timeoutInterval = self.configuration.timeoutInterval;
-        self.manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-        self.rs = self.manager.requestSerializer;
-        self.operations = [NSMapTable strongToWeakObjectsMapTable];
+        self.manager.requestSerializer = self.configuration.requestSerializer;
+        self.manager.responseSerializer = self.configuration.responseSerializer;
+        self.manager.securityPolicy = self.configuration.securityPolicy;
+        self.rs = self.configuration.requestSerializer;
         self.fileManager = [NSFileManager new];
     }
+    
     return self;
+}
+
+- (instancetype)init {
+    return [self initWithConfiguration:nil];
 }
 
 #pragma mark - Request Operation
 
 - (void)cancelAllOperations {
     [self.manager.operationQueue cancelAllOperations];
-    [self.operations removeAllObjects];
-}
-
-- (void)cancelOperationWithIdentifier:(NSString *) identifier {
-    if (!identifier) {
-        return;
-    }
-    NSOperation *operation = [self.operations objectForKey:identifier];
-    if (!operation) {
-        return;
-    }
-    
-    [operation cancel];
-    [self.operations removeObjectForKey:identifier];
-}
-
-- (BOOL)pauseOperationWithIdentifier:(NSString *) identifier {
-    if (!identifier) {
-        return NO;
-    }
-    AFHTTPRequestOperation *operation = [self.operations objectForKey:identifier];
-    if (!operation || [operation isPaused]) {
-        return NO;
-    }
-    [operation pause];
-    return YES;
-}
-
-- (BOOL)resumeOperationWithIdentifier:(NSString *) identifier {
-    if (!identifier) {
-        return NO;
-    }
-    AFHTTPRequestOperation *operation = [self.operations objectForKey:identifier];
-    if (!operation || ![operation isPaused]) {
-        return NO;
-    }
-    [operation resume];
-    return YES;
-}
-
-- (BOOL)isPausedOperationWithIdentifier:(NSString *) identifier {
-    if (!identifier) {
-        return NO;
-    }
-    
-    AFHTTPRequestOperation *operation = [self.operations objectForKey:identifier];
-    if (!operation) {
-        return NO;
-    }
-    
-    return [operation isPaused];
-}
-
-- (BOOL)isExecutingOperationWithIdentifier:(NSString *)identifier {
-    if (!identifier) {
-        return NO;
-    }
-    
-    AFHTTPRequestOperation *operation = [self.operations objectForKey:identifier];
-    if (!operation) {
-        return NO;
-    }
-    
-    return [operation isExecuting];
 }
 
 #pragma mark - Request Methods
 
-- (NSString *)fetchDataFromRequester:(ACSURLHTTPRequester *) requester {
+- (void)fetchDataFromRequester:(ACSURLHTTPRequester *) requester {
     NSAssert(requester, @"requester不能为nil");
     NSAssert(requester.path || requester.URL, @"path与URL只能填写其中一个");
     NSAssert(requester.responseType == ACSResponseTypeJSON || requester.responseType == ACSResponseTypeData, @"responseType暂只支持JSON与data");
     
-    NSMutableURLRequest *URLRequest = [requester URLRequestFormOperationManager:self.manager];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+    SEL operationCreateSEL = @selector(URLOperationFormManager:cacheExpiration:success:failure:);
+#pragma clang diagnostic pop
     
-    //取本地缓存
-    id resultObject = [[ACSCache sharedCache] fetchDataFromDiskCacheForURL:URLRequest.URL];
-    if (resultObject && requester.method == ACSRequestMethodGET && requester.cacheResponseData) {
-        id tempResult = resultObject;
-        if ([resultObject isKindOfClass:[NSData class]]) {
-            if (requester.responseType == ACSResponseTypeJSON) {
-                tempResult = [NSJSONSerialization JSONObjectWithData:resultObject options:NSJSONReadingAllowFragments error:nil];
-            }
-        }
-        else if ([resultObject isKindOfClass:[NSDictionary class]] ||
-                 [resultObject isKindOfClass:[NSArray class]]) {
-            tempResult = [NSJSONSerialization dataWithJSONObject:resultObject options:NSJSONWritingPrettyPrinted error:nil];
-        }
-        
-        if (requester.completionBlock) {
-            requester.completionBlock(tempResult, nil);
-        }
-        
-        if (requester.delegate) {
-            if ([requester.delegate respondsToSelector:@selector(request:didReceiveData:)]) {
-                [requester.delegate request:requester didReceiveData:tempResult];
-            }
-            
-            if ([requester.delegate respondsToSelector:@selector(requestDidFinishLoading:)]) {
-                [requester.delegate requestDidFinishLoading:requester];
-            }
-        }
-        
-        return nil;
-    }
+    NSAssert([requester respondsToSelector:operationCreateSEL], @"未找到URLOperationFormManager:cacheExpiration:success:failure:");
     
-    AFHTTPRequestOperation *operation = [self.manager HTTPRequestOperationWithRequest:URLRequest
-                                                                              success:[self requestSuccess:requester]
-                                                                              failure:[self requestFailure:requester]];
-    [self.manager.operationQueue addOperation:operation];
+    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[requester methodSignatureForSelector:operationCreateSEL]];
+    invocation.target = requester;
+    invocation.selector = operationCreateSEL;
     
-    NSString *operationIdentifier = ACSGenerateOperationIdentifier();
-    [self.operations setObject:operation forKey:operationIdentifier];
+    NSTimeInterval cacheExpirationTimeInterval = self.configuration.cacheExpirationTimeInterval;
+    AFHTTPRequestOperationManager *manager = self.manager;
+    void (^success)(AFHTTPRequestOperation *operation, id responseObject) = [self requestSuccess:requester];
+    void (^failure)(AFHTTPRequestOperation *operation, NSError *error) = [self requestFailure:requester];
     
-    return operationIdentifier;
+    [invocation setArgument:&manager atIndex:2];
+    [invocation setArgument:&cacheExpirationTimeInterval atIndex:3];
+    [invocation setArgument:&success atIndex:4];
+    [invocation setArgument:&failure atIndex:5];
+    [invocation invoke];
 }
 
-- (NSString *)uploadFileFromRequester:(ACSFileUploader *) requester {
+- (void)uploadFileFromRequester:(ACSFileUploader *) requester {
     NSAssert(requester, @"requester不能为nil");
     NSAssert(requester.path || requester.URL, @"path与URL只能填写其中一个");
     NSAssert(requester.responseType == ACSResponseTypeJSON || requester.responseType == ACSResponseTypeData, @"responseType暂只支持JSON与data");
     
-    NSMutableURLRequest *URLRequest = [requester URLRequestFormOperationManager:self.manager];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+    SEL operationCreateSEL = @selector(URLOperationFormManager:success:failure:);
+#pragma clang diagnostic pop
     
-    AFHTTPRequestOperation *operation = [self.manager HTTPRequestOperationWithRequest:URLRequest
-                                                                              success:[self requestSuccess:requester]
-                                                                              failure:[self requestFailure:requester]];
+    NSAssert([requester respondsToSelector:operationCreateSEL], @"未找到URLOperationFormManager:success:failure:");
     
+    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[requester methodSignatureForSelector:operationCreateSEL]];
+    invocation.target = requester;
+    invocation.selector = operationCreateSEL;
     
-    __weak __typeof(requester) wrequester = requester;
-    [operation setUploadProgressBlock:^(NSUInteger bytesWritten,
-                                        long long totalBytesWritten,
-                                        long long totalBytesExpectedToWrite) {
-        __strong __typeof(wrequester) srequester = wrequester;
-        if (srequester) {
-            
-            if (srequester.progressBlock) {
-                srequester.progressBlock(ACSRequestProgressMake(bytesWritten,
-                                                                totalBytesWritten,
-                                                                totalBytesExpectedToWrite), nil, nil);
-            }
-            
-            if (srequester.delegate) {
-                if ([srequester.delegate respondsToSelector:@selector(request:didFileProgressing:)]) {
-                    [srequester.delegate request:srequester didFileProgressing:ACSRequestProgressMake(bytesWritten, totalBytesWritten, totalBytesExpectedToWrite)];
-                }
-            }
-        }
-    }];
-    
-    [self.manager.operationQueue addOperation:operation];
-    NSString *operationIdentifier = ACSGenerateOperationIdentifier();
-    [self.operations setObject:operation forKey:operationIdentifier];
-    
-    return operationIdentifier;
+    AFHTTPRequestOperationManager *manager = self.manager;
+    void (^success)(AFHTTPRequestOperation *operation, id responseObject) = [self requestSuccess:requester];
+    void (^failure)(AFHTTPRequestOperation *operation, NSError *error) = [self requestFailure:requester];
+    [invocation setArgument:&manager atIndex:2];
+    [invocation setArgument:&success atIndex:3];
+    [invocation setArgument:&failure atIndex:4];
+    [invocation invoke];
 }
 
-- (NSString *)downloadFileFromRequester:(ACSFileDownloader *) requester {
+- (void)downloadFileFromRequester:(ACSFileDownloader *) requester {
     NSAssert(requester, @"requester不能为nil");
     NSAssert(requester.path || requester.URL, @"path与URL只能填写其中一个");
     NSAssert(requester.responseType != ACSResponseTypeJSON || requester.responseType == ACSResponseTypeData, @"responseType暂不只支持JSON");
     
-    NSMutableURLRequest *URLRequest = [requester URLRequestFormOperationManager:self.manager];
-    NSString *filePath = [[ACSCache sharedCache] fetchAbsolutePathforURL:URLRequest.URL];
-    NSData *fileData = ACSFileDataFromPath(filePath);
-    if (fileData) {
-        id resultData = nil;
-        if (requester.responseType == ACSResponseTypeFilePath) {
-            resultData = filePath;
-        }
-        else if (requester.responseType == ACSResponseTypeImage) {
-#if TARGET_OS_IPHONE
-            resultData = [UIImage imageWithData:fileData];
-#else
-            resultData = [[NSImage alloc] initWithData:fileData];
-#endif
-        }
-        else if (requester.responseType == ACSResponseTypeData) {
-            resultData = fileData;
-        }
-        if (requester.progressBlock) {
-            requester.progressBlock(ACSRequestProgressZero, resultData, nil);
-        }
-        
-        if (requester.delegate) {
-            if ([requester.delegate respondsToSelector:@selector(request:didReceiveData:)]) {
-                [requester.delegate request:requester didReceiveData:resultData];
-            }
-            
-            if ([requester.delegate respondsToSelector:@selector(requestDidFinishLoading:)]) {
-                [requester.delegate requestDidFinishLoading:requester];
-            }
-        }
-        
-        return nil;
-    }
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+    SEL operationCreateSEL = @selector(URLOperationFormManager:downloadExpiration:success:failure:);
+#pragma clang diagnostic pop
     
-    NSString *tmpPath = ACSFilePathFromURL(URLRequest.URL, NSTemporaryDirectory(), @"tmp");
+    NSAssert([requester respondsToSelector:operationCreateSEL], @"未找到URLOperationFormManager:downloadExpiration:success:failure:");
+    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[requester methodSignatureForSelector:operationCreateSEL]];
+    invocation.target = requester;
+    invocation.selector = operationCreateSEL;
     
-    //获取已下载的大小
-    unsigned long long downloadedBytes = ACSFileSizeFromPath(tmpPath);
-    BOOL isAppend = NO;
-    if (downloadedBytes > 0) {
-        //设置请求头 请求downloadedBytes字节以后的范围
-        NSString *requestRange = [NSString stringWithFormat:@"bytes=%llu-", downloadedBytes];
-        [URLRequest setValue:requestRange forHTTPHeaderField:@"Range"];
-        isAppend = YES;
-    }
+    NSTimeInterval downloadExpirationTimeInterval = self.configuration.downloadExpirationTimeInterval;
+    AFHTTPRequestOperationManager *manager = self.manager;
+    void (^success)(AFHTTPRequestOperation *operation, id responseObject) = [self requestSuccess:requester];
+    void (^failure)(AFHTTPRequestOperation *operation, NSError *error) = [self requestFailure:requester];
     
-    AFHTTPRequestOperation *operation = [self.manager HTTPRequestOperationWithRequest:URLRequest
-                                                                              success:[self requestSuccess:requester]
-                                                                              failure:[self requestFailure:requester]];
-    operation.outputStream = [NSOutputStream outputStreamToFileAtPath:tmpPath append:isAppend];
-    
-    __weak __typeof__(operation) woperation = operation;
-    __weak __typeof(requester) wrequester = requester;
-    [operation setDownloadProgressBlock:^(NSUInteger bytesRead,
-                                          long long totalBytesRead,
-                                          long long totalBytesExpectedToRead) {
-        __strong __typeof(woperation) soperation = woperation;
-        if (soperation) {
-            NSInteger statusCode = woperation.response.statusCode;
-            if (statusCode == 200 || statusCode == 206) {
-                __strong __typeof(wrequester) srequester = wrequester;
-                if (srequester) {
-                    
-                    if (srequester.progressBlock) {
-                        
-                        srequester.progressBlock(ACSRequestProgressMake(bytesRead,
-                                                                        totalBytesRead,
-                                                                        totalBytesExpectedToRead), nil, nil);
-                    }
-                    if (srequester.delegate) {
-                        if ([srequester.delegate respondsToSelector:@selector(request:didFileProgressing:)]) {
-                            [srequester.delegate request:srequester didFileProgressing:ACSRequestProgressMake(bytesRead, totalBytesRead, totalBytesExpectedToRead)];
-                        }
-                    }
-                }
-            }
-        }
-    }];
-    
-    [self.manager.operationQueue addOperation:operation];
-    
-    NSString *operationIdentifier = ACSGenerateOperationIdentifier();
-    [self.operations setObject:operation forKey:operationIdentifier];
-    
-    return operationIdentifier;
-}
-
-- (NSString *)fetchDataFromPath:(NSString *)path
-                         method:(ACSRequestMethod)method
-                     parameters:(NSDictionary *)parameters
-                     completion:(ACSRequestCompletionHandler)completionBlock {
-    NSURL *URL = [NSURL URLWithString:path ?: @""
-                        relativeToURL:self.manager.baseURL];
-    
-    return [self fetchDataFromURLString:URL.absoluteString
-                                 method:method
-                             parameters:parameters
-                             completion:completionBlock];
-}
-
-- (NSString *)GET_fetchDataFromPath:(NSString *)path
-                         parameters:(NSDictionary *)parameters
-                         completion:(ACSRequestCompletionHandler)completionBlock{
-    return [self fetchDataFromPath:path
-                            method:ACSRequestMethodGET
-                        parameters:parameters
-                        completion:completionBlock];
-}
-
-- (NSString *)POST_fetchDataFromPath:(NSString *)path
-                          parameters:(NSDictionary *)parameters
-                          completion:(ACSRequestCompletionHandler)completionBlock {
-    return [self fetchDataFromPath:path
-                            method:ACSRequestMethodPOST
-                        parameters:parameters
-                        completion:completionBlock];
-}
-
-- (NSString *)uploadFileFromPath:(NSString *)path
-                        fileInfo:(NSDictionary *)fileInfo
-                      parameters:(NSDictionary *)parameters
-                        progress:(ACSRequestProgressHandler)progressBlock {
-    NSURL *URL = [NSURL URLWithString:path ?: @""
-                        relativeToURL:self.manager.baseURL];
-    return [self uploadFileFromURLString:URL.absoluteString
-                                fileInfo:fileInfo
-                              parameters:parameters
-                                progress:progressBlock];
-}
-
-- (NSString *)downloadFileFromPath:(NSString *)path
-                          progress:(ACSRequestProgressHandler)progressBlock{
-    NSURL *URL = [NSURL URLWithString:path ?: @""
-                        relativeToURL:self.manager.baseURL];
-    return [self downloadFileFromURLString:URL.absoluteString
-                                  progress:progressBlock];
-}
-
-
-- (NSString *)fetchDataFromURLString:(NSString *)URLString
-                              method:(ACSRequestMethod)method
-                          parameters:(NSDictionary *)parameters
-                          completion:(ACSRequestCompletionHandler)completionBlock {
-    ACSURLHTTPRequester *requester = ACSCreateRequester([NSURL URLWithString:URLString],
-                                                        method,
-                                                        parameters,
-                                                        completionBlock);
-    return [self fetchDataFromRequester:requester];
-}
-
-- (NSString *)uploadFileFromURLString:(NSString *)URLString
-                             fileInfo:(NSDictionary *)fileInfo
-                           parameters:(NSDictionary *)parameters
-                             progress:(ACSRequestProgressHandler)progressBlock {
-    ACSFileUploader *uploader = ACSCreateUploader([NSURL URLWithString:URLString],
-                                                  fileInfo,
-                                                  progressBlock);
-    uploader.parameters = parameters;
-    return [self uploadFileFromRequester:uploader];
-}
-
-- (NSString *)downloadFileFromURLString:(NSString *)URLString
-                               progress:(ACSRequestProgressHandler)progressBlock{
-    ACSFileDownloader *downloader = ACSCreateDownloader([NSURL URLWithString:URLString], progressBlock);
-    return [self downloadFileFromRequester:downloader];
+    [invocation setArgument:&manager atIndex:2];
+    [invocation setArgument:&downloadExpirationTimeInterval atIndex:3];
+    [invocation setArgument:&success atIndex:4];
+    [invocation setArgument:&failure atIndex:5];
+//    [invocation retainArguments];
+    [invocation invoke];
 }
 
 #pragma mark - Extension Methods
@@ -551,12 +326,15 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
         }
         else if ([requester isKindOfClass:[ACSFileDownloader class]]) {
             NSString *filePath;
-            NSData *fileData;
-            @synchronized(requester) {
+            BOOL isExist;
+            @synchronized(self) {
                 //获取后缀
                 NSString *extension = ACSExtensionFromMIMEType(operation.response.MIMEType);
+                if (!extension || [extension isEqualToString:@""]) {
+                    extension = ACSExtensionFromContentType([operation.response.allHeaderFields valueForKey:@"Content-Type"]);
+                }
                 //下载路径
-                filePath = ACSFilePathFromURL(requester.URL, [ACSNetworkConfiguration defaultConfiguration].downloadFolder, extension);
+                filePath = ACSFilePathFromURL(requester.URL, self.configuration.downloadFolder, extension);
                 NSString *srcFilePath = ACSFilePathFromURL(requester.URL, NSTemporaryDirectory(), @"tmp");
                 //删除已存在的文件以便于后面的移动操作
                 if ([self.fileManager fileExistsAtPath:srcFilePath]) {
@@ -569,23 +347,23 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
                         [[ACSCache sharedCache] storeAbsolutePath:filePath forURL:requester.URL];
                     }
                 }
-                
-                fileData = [self.fileManager contentsAtPath:filePath];
+                isExist = [self.fileManager fileExistsAtPath:filePath];
             }
             id resultData = nil;
-            if (fileData) {
+            if (isExist) {
                 if (requester.responseType == ACSResponseTypeFilePath) {
                     resultData = filePath;
                 }
                 else if (requester.responseType == ACSResponseTypeImage) {
 #if TARGET_OS_IPHONE
-                    resultData = [UIImage imageWithData:fileData];
+                    resultData = [UIImage imageWithContentsOfFile:filePath];
 #else
-                    resultData = [[NSImage alloc] initWithData:fileData];
+                    resultData = [[NSImage alloc] initWithContentsOfFile:filePath];
 #endif
+                    NSAssert(resultData, @"当前下载文件并非图片，请使用ACSResponseTypeFilePath");
                 }
                 else if (requester.responseType == ACSResponseTypeData) {
-                    resultData = fileData;
+                    resultData = [self.fileManager contentsAtPath:filePath];
                 }
             }
             
@@ -649,7 +427,8 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
             id resultObject = nil;
             if (((ACSURLHTTPRequester *)requester).cacheResponseData &&
                 ((ACSURLHTTPRequester *)requester).method == ACSRequestMethodGET) {
-                resultObject = [[ACSCache sharedCache] fetchDataFromDiskCacheForURL:requester.URL];
+                resultObject = [[ACSCache sharedCache] fetchDataFromDiskCacheForURL:requester.URL
+                                                                    cacheExpiration:self.configuration.cacheExpirationTimeInterval];
             }
             if (((ACSURLHTTPRequester *)requester).completionBlock) {
                 ((ACSURLHTTPRequester *)requester).completionBlock(resultObject, resultObject ? nil : error);
@@ -684,6 +463,97 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString *MIMEType)
     };
     return failureBlock;
 }
+#endif
+
+@end
+
+@implementation ACSRequestManager (ACSRequestManagerDeprecated)
+
+#ifdef _AFNETWORKING_
+
+- (ACSURLHTTPRequester *)fetchDataFromPath:(NSString *)path
+                                    method:(ACSRequestMethod)method
+                                parameters:(NSDictionary *)parameters
+                                completion:(ACSRequestCompletionHandler)completionBlock {
+    NSURL *URL = [NSURL URLWithString:path ?: @""
+                        relativeToURL:self.manager.baseURL];
+    
+    return [self fetchDataFromURLString:URL.absoluteString
+                                 method:method
+                             parameters:parameters
+                             completion:completionBlock];
+}
+
+- (ACSURLHTTPRequester *)GET_fetchDataFromPath:(NSString *)path
+                                    parameters:(NSDictionary *)parameters
+                                    completion:(ACSRequestCompletionHandler)completionBlock{
+    return [self fetchDataFromPath:path
+                            method:ACSRequestMethodGET
+                        parameters:parameters
+                        completion:completionBlock];
+}
+
+- (ACSURLHTTPRequester *)POST_fetchDataFromPath:(NSString *)path
+                                     parameters:(NSDictionary *)parameters
+                                     completion:(ACSRequestCompletionHandler)completionBlock {
+    return [self fetchDataFromPath:path
+                            method:ACSRequestMethodPOST
+                        parameters:parameters
+                        completion:completionBlock];
+}
+
+- (ACSFileUploader *)uploadFileFromPath:(NSString *)path
+                               fileInfo:(NSDictionary *)fileInfo
+                             parameters:(NSDictionary *)parameters
+                               progress:(ACSRequestProgressHandler)progressBlock {
+    NSURL *URL = [NSURL URLWithString:path ?: @""
+                        relativeToURL:self.manager.baseURL];
+    return [self uploadFileFromURLString:URL.absoluteString
+                                fileInfo:fileInfo
+                              parameters:parameters
+                                progress:progressBlock];
+}
+
+- (ACSFileDownloader *)downloadFileFromPath:(NSString *)path
+                                   progress:(ACSRequestProgressHandler)progressBlock{
+    NSURL *URL = [NSURL URLWithString:path ?: @""
+                        relativeToURL:self.manager.baseURL];
+    return [self downloadFileFromURLString:URL.absoluteString
+                                  progress:progressBlock];
+}
+
+
+- (ACSURLHTTPRequester *)fetchDataFromURLString:(NSString *)URLString
+                                         method:(ACSRequestMethod)method
+                                     parameters:(NSDictionary *)parameters
+                                     completion:(ACSRequestCompletionHandler)completionBlock {
+    ACSURLHTTPRequester *requester = ACSCreateRequester([NSURL URLWithString:URLString],
+                                                        method,
+                                                        parameters,
+                                                        completionBlock);
+    [self fetchDataFromRequester:requester];
+    return requester;
+}
+
+- (ACSFileUploader *)uploadFileFromURLString:(NSString *)URLString
+                                    fileInfo:(NSDictionary *)fileInfo
+                                  parameters:(NSDictionary *)parameters
+                                    progress:(ACSRequestProgressHandler)progressBlock {
+    ACSFileUploader *uploader = ACSCreateUploader([NSURL URLWithString:URLString],
+                                                  fileInfo,
+                                                  progressBlock);
+    uploader.parameters = parameters;
+    [self uploadFileFromRequester:uploader];
+    return uploader;
+}
+
+- (ACSFileDownloader *)downloadFileFromURLString:(NSString *)URLString
+                                        progress:(ACSRequestProgressHandler)progressBlock{
+    ACSFileDownloader *downloader = ACSCreateDownloader([NSURL URLWithString:URLString], progressBlock);
+    [self downloadFileFromRequester:downloader];
+    return downloader;
+}
+
 #endif
 
 @end

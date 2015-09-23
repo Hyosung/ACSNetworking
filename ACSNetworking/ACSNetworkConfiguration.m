@@ -62,16 +62,24 @@
     return networkConfig;
 }
 
++ (instancetype)configuration {
+    return [[self alloc] init];
+}
+
 - (instancetype)init {
     self = [super init];
     if (self) {
         _backgroundQueue = dispatch_queue_create("com.stoney.ACSNetworking", DISPATCH_QUEUE_SERIAL);
         
+        _requestSerializer = [AFHTTPRequestSerializer serializer];
+        _responseSerializer = [AFHTTPResponseSerializer serializer];
+        _securityPolicy = [AFSecurityPolicy defaultPolicy];
+        
         dispatch_sync(_backgroundQueue, ^{
             _fileManager = [NSFileManager new];
         });
         
-        _timeoutInterval = 30.0;
+        _requestSerializer.timeoutInterval = 30.0;
         [self setDownloadFolderName:@"Download"];
         _cacheExpirationTimeInterval = 60.0 * 3;
         _downloadExpirationTimeInterval = (60.0 * 60.0 * 24.0 * 7);
@@ -81,6 +89,14 @@
 #endif
     }
     return self;
+}
+
+- (void)setTimeoutInterval:(NSTimeInterval)timeoutInterval {
+    _requestSerializer.timeoutInterval = timeoutInterval;
+}
+
+- (NSTimeInterval)timeoutInterval {
+    return _requestSerializer.timeoutInterval;
 }
 
 - (void)setDownloadFolderName:(NSString *)downloadFolderName {

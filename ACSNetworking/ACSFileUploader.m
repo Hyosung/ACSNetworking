@@ -39,7 +39,125 @@
 @synthesize parameters = _parameters;
 @synthesize responseType = _responseType;
 @synthesize progressBlock = _progressBlock;
+
+#ifdef _AFNETWORKING_
+
+@synthesize operation = _operation;
 @synthesize operationManager = _operationManager;
+
+- (void)URLOperationFormManager:(AFHTTPRequestOperationManager *)operationManager
+                        success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
+                        failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure {
+    
+    _operationManager = operationManager;
+    NSURL *__weak tempURL = self.URL ?: [NSURL URLWithString:self.path ?: @""
+                                               relativeToURL:operationManager.baseURL];
+    self.URL = tempURL;
+    __weak __typeof__(self) weakSelf = self;
+    NSURLRequest *URLRequest = [[operationManager.requestSerializer multipartFormRequestWithMethod:@"POST"
+                                                                                               URLString:self.URL.absoluteString
+                                                                                              parameters:self.parameters
+                                                                               constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+                                                                                   __strong __typeof__(weakSelf) self = weakSelf;
+                                                                                   NSArray *allKeys = self.fileInfo.allKeys;
+                                                                                   for (NSString *keyName in allKeys) {
+                                                                                       id fileValue = self.fileInfo[keyName];
+                                                                                       if ([fileValue isKindOfClass:[NSString class]]) {
+                                                                                           
+                                                                                           [formData appendPartWithFileURL:[NSURL URLWithString:fileValue]
+                                                                                                                      name:keyName
+                                                                                                                     error:nil];
+                                                                                       }
+                                                                                       else if ([fileValue isKindOfClass:[NSData class]]) {
+                                                                                           [formData appendPartWithFormData:fileValue name:keyName];
+                                                                                       }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
+                                                                                       else if ([fileValue isKindOfClass:[UIImage class]]) {
+                                                                                           [formData appendPartWithFormData:UIImageJPEGRepresentation(fileValue, 1.0) name:keyName];
+                                                                                       }
+#else
+                                                                                       else if ([fileValue isKindOfClass:[NSImage class]]) {
+                                                                                           [formData appendPartWithFormData:[fileValue TIFFRepresentationUsingCompression:NSTIFFCompressionNone factor:1.0] name:keyName];
+                                                                                       }
+#endif
+                                                                                       else if ([fileValue isKindOfClass:[NSURL class]]) {
+                                                                                           [formData appendPartWithFileURL:fileValue name:keyName error:nil];
+                                                                                       }
+                                                                                   }
+                                                                               } error:nil] copy];
+    
+    AFHTTPRequestOperation *operation = [operationManager HTTPRequestOperationWithRequest:URLRequest
+                                                                                  success:success
+                                                                                  failure:failure];
+    
+    __weak __typeof(self) wrequester = self;
+    [operation setUploadProgressBlock:^(NSUInteger bytesWritten,
+                                        long long totalBytesWritten,
+                                        long long totalBytesExpectedToWrite) {
+        __strong __typeof(wrequester) srequester = wrequester;
+        if (srequester) {
+            
+            if (srequester.progressBlock) {
+                srequester.progressBlock(ACSRequestProgressMake(bytesWritten,
+                                                                (CGFloat)totalBytesWritten / totalBytesExpectedToWrite,
+                                                                totalBytesWritten,
+                                                                totalBytesExpectedToWrite), nil, nil);
+            }
+            
+            if (srequester.delegate) {
+                if ([srequester.delegate respondsToSelector:@selector(request:didFileProgressing:)]) {
+                    [srequester.delegate request:srequester didFileProgressing:ACSRequestProgressMake(bytesWritten,
+                                                                                                      (CGFloat)totalBytesWritten / totalBytesExpectedToWrite,
+                                                                                                      totalBytesWritten,
+                                                                                                      totalBytesExpectedToWrite)];
+                }
+            }
+        }
+    }];
+    
+    _operation = operation;
+    [operationManager.operationQueue addOperation:operation];
+}
+
+- (void)cancel {
+    if (!self.operation) {
+        return;
+    }
+    
+    [self.operation cancel];
+}
+
+- (BOOL)pause {
+    
+    if (!self.operation ||
+        [self.operation isPaused]) {
+        return NO;
+    }
+    
+    [self.operation pause];
+    return YES;
+}
+
+- (BOOL)resume {
+    if (!self.operation ||
+        ![self.operation isPaused]) {
+        return NO;
+    }
+    
+    [self.operation resume];
+    return YES;
+}
+
+- (BOOL)isPaused {
+    
+    return [self.operation isPaused];
+}
+
+- (BOOL)isExecuting {
+    return [self.operation isExecuting];
+}
+
+#endif
 
 - (ACSRequestMethod)method {
     if (_method == ACSRequestMethodGET || _method == ACSRequestMethodHEAD) {
@@ -47,47 +165,6 @@
     }
     return _method;
 }
-
-#ifdef _AFNETWORKING_
-- (NSMutableURLRequest *)URLRequestFormOperationManager:(AFHTTPRequestOperationManager *)operationManager {
-    _operationManager = operationManager;
-    NSURL *__weak tempURL = self.URL ?: [NSURL URLWithString:self.path ?: @""
-                                               relativeToURL:operationManager.baseURL];
-    self.URL = tempURL;
-    __weak __typeof__(self) weakSelf = self;
-    return [operationManager.requestSerializer multipartFormRequestWithMethod:@"POST"
-                                                                    URLString:self.URL.absoluteString
-                                                                   parameters:self.parameters
-                                                    constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-                                                        __strong __typeof__(weakSelf) self = weakSelf;
-                                                        NSArray *allKeys = self.fileInfo.allKeys;
-                                                        for (NSString *keyName in allKeys) {
-                                                            id fileValue = self.fileInfo[keyName];
-                                                            if ([fileValue isKindOfClass:[NSString class]]) {
-                                                                
-                                                                [formData appendPartWithFileURL:[NSURL URLWithString:fileValue]
-                                                                                           name:keyName
-                                                                                          error:nil];
-                                                            }
-                                                            else if ([fileValue isKindOfClass:[NSData class]]) {
-                                                                [formData appendPartWithFormData:fileValue name:keyName];
-                                                            }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED
-                                                            else if ([fileValue isKindOfClass:[UIImage class]]) {
-                                                                [formData appendPartWithFormData:UIImageJPEGRepresentation(fileValue, 1.0) name:keyName];
-                                                            }
-#else
-                                                            else if ([fileValue isKindOfClass:[NSImage class]]) {
-                                                                [formData appendPartWithFormData:[fileValue TIFFRepresentationUsingCompression:NSTIFFCompressionNone factor:1.0] name:keyName];
-                                                            }
-#endif
-                                                            else if ([fileValue isKindOfClass:[NSURL class]]) {
-                                                                [formData appendPartWithFileURL:fileValue name:keyName error:nil];
-                                                            }
-                                                        }
-                                                    } error:nil];
-}
-#endif
 
 @end
 __attribute__((overloadable)) ACSFileUploader * ACSCreateUploader(NSString *path, NSDictionary *fileInfo, ACSRequestProgressHandler progressBlock) {

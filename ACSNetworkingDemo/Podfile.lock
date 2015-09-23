@@ -1,25 +1,25 @@
 PODS:
-  - ACSNetworking (0.0.1):
-    - AFNetworking (~> 2.5.4)
-  - AFNetworking (2.5.4):
-    - AFNetworking/NSURLConnection (= 2.5.4)
-    - AFNetworking/NSURLSession (= 2.5.4)
-    - AFNetworking/Reachability (= 2.5.4)
-    - AFNetworking/Security (= 2.5.4)
-    - AFNetworking/Serialization (= 2.5.4)
-    - AFNetworking/UIKit (= 2.5.4)
-  - AFNetworking/NSURLConnection (2.5.4):
+  - ACSNetworking (0.0.2):
+    - AFNetworking (~> 2.6.0)
+  - AFNetworking (2.6.0):
+    - AFNetworking/NSURLConnection (= 2.6.0)
+    - AFNetworking/NSURLSession (= 2.6.0)
+    - AFNetworking/Reachability (= 2.6.0)
+    - AFNetworking/Security (= 2.6.0)
+    - AFNetworking/Serialization (= 2.6.0)
+    - AFNetworking/UIKit (= 2.6.0)
+  - AFNetworking/NSURLConnection (2.6.0):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/NSURLSession (2.5.4):
+  - AFNetworking/NSURLSession (2.6.0):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/Reachability (2.5.4)
-  - AFNetworking/Security (2.5.4)
-  - AFNetworking/Serialization (2.5.4)
-  - AFNetworking/UIKit (2.5.4):
+  - AFNetworking/Reachability (2.6.0)
+  - AFNetworking/Security (2.6.0)
+  - AFNetworking/Serialization (2.6.0)
+  - AFNetworking/UIKit (2.6.0):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
 
@@ -30,13 +30,8 @@ EXTERNAL SOURCES:
   ACSNetworking:
     :path: ../
 
-CHECKOUT OPTIONS:
-  ACSNetworking:
-    :git: https://github.com/Hyosung/ACSNetworking.git
-    :tag: 0.0.1
-
 SPEC CHECKSUMS:
-  ACSNetworking: ede056c003f0c27c40901cbea6f234039e179354
-  AFNetworking: 05edc0ac4c4c8cf57bcf4b84be5b0744b6d8e71e
+  ACSNetworking: d667699d7780e4c140770178e8b9f3405f726bd8
+  AFNetworking: 79f7eb1a0fcfa7beb409332b2ca49afe9ce53b05
 
-COCOAPODS: 0.35.0
+COCOAPODS: 0.38.2

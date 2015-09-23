@@ -22,13 +22,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
+#import "ACSNetworkPrivate.h"
 
 @interface ACSNetworkConfiguration : NSObject
 
 + (instancetype)defaultConfiguration;
++ (instancetype)configuration;
 
-@property (nonatomic, copy) NSURL *baseURL;
+@property (nonatomic, strong) NSURL *baseURL;
+
+@property (nonatomic, strong) AFHTTPRequestSerializer <AFURLRequestSerialization> * requestSerializer;
+
+@property (nonatomic, strong) AFHTTPResponseSerializer <AFURLResponseSerialization> * responseSerializer;
+
+@property (nonatomic, strong) AFSecurityPolicy *securityPolicy;
 
 /**
  下载文件的存放文件夹 默认 ~Document/Download
@@ -48,7 +55,7 @@
 /**
  请求超时时间 默认 30.0s
  */
-@property (nonatomic) NSTimeInterval timeoutInterval;
+@property (nonatomic) NSTimeInterval timeoutInterval NS_DEPRECATED(10_2, 10_11, 2_0, 9_0, "请使用requestSerializer.timeoutInterval");
 
 /**
  缓存过期时间 默认 180.0s(3min)

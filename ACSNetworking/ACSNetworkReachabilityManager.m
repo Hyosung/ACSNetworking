@@ -152,14 +152,13 @@ static void ACSNetworkReachabilityReleaseCallback(const void *info) {
 }
 
 @interface ACSNetworkReachabilityManager ()
-@property (readwrite, nonatomic, assign) SCNetworkReachabilityRef networkReachability;
+@property (readwrite, nonatomic, strong) id networkReachability;
 @property (readwrite, nonatomic, assign) ACSNetworkReachabilityAssociation networkReachabilityAssociation;
 @property (readwrite, nonatomic, assign) ACSNetworkReachabilityStatus networkReachabilityStatus;
 @property (readwrite, nonatomic, copy) ACSNetworkReachabilityStatusBlock networkReachabilityStatusBlock;
 @end
 
 @implementation ACSNetworkReachabilityManager
-
 
 + (instancetype)sharedManager {
     static ACSNetworkReachabilityManager *_sharedManager = nil;
@@ -200,19 +199,23 @@ static void ACSNetworkReachabilityReleaseCallback(const void *info) {
         return nil;
     }
     
-    self.networkReachability = reachability;
+    self.networkReachability = CFBridgingRelease(reachability);
     self.networkReachabilityStatus = ACSNetworkReachabilityStatusUnknown;
     
     return self;
 }
 
+- (instancetype)init NS_UNAVAILABLE {
+    return nil;
+}
+
 - (void)dealloc {
     [self stopMonitoring];
     
-    if (_networkReachability) {
-        CFRelease(_networkReachability);
-        _networkReachability = NULL;
-    }
+//    if (_networkReachability) {
+//        CFRelease(_networkReachability);
+//        _networkReachability = NULL;
+//    }
 }
 
 #pragma mark -
@@ -277,9 +280,10 @@ static void ACSNetworkReachabilityReleaseCallback(const void *info) {
         
     };
     
+    id networkReachability = self.networkReachability;
     SCNetworkReachabilityContext context = {0, (__bridge void *)callback, ACSNetworkReachabilityRetainCallback, ACSNetworkReachabilityReleaseCallback, NULL};
-    SCNetworkReachabilitySetCallback(self.networkReachability, ACSNetworkReachabilityCallback, &context);
-    SCNetworkReachabilityScheduleWithRunLoop(self.networkReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
+    SCNetworkReachabilitySetCallback((__bridge SCNetworkReachabilityRef)networkReachability, ACSNetworkReachabilityCallback, &context);
+    SCNetworkReachabilityScheduleWithRunLoop((__bridge SCNetworkReachabilityRef)networkReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
     
     switch (self.networkReachabilityAssociation) {
         case ACSNetworkReachabilityForName:
@@ -289,7 +293,7 @@ static void ACSNetworkReachabilityReleaseCallback(const void *info) {
         default: {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0),^{
                 SCNetworkReachabilityFlags flags;
-                SCNetworkReachabilityGetFlags(self.networkReachability, &flags);
+                SCNetworkReachabilityGetFlags((__bridge SCNetworkReachabilityRef)networkReachability, &flags);
                 ACSNetworkReachabilityStatus status = ACSNetworkReachabilityStatusForFlags(flags);
                 dispatch_async(dispatch_get_main_queue(), ^{
                     callback(status);
@@ -310,7 +314,7 @@ static void ACSNetworkReachabilityReleaseCallback(const void *info) {
         return;
     }
     
-    SCNetworkReachabilityUnscheduleFromRunLoop(self.networkReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
+    SCNetworkReachabilityUnscheduleFromRunLoop((__bridge SCNetworkReachabilityRef)self.networkReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
 }
 
 #pragma mark -

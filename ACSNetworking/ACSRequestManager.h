@@ -27,105 +27,96 @@
 @class ACSFileUploader;
 @class ACSFileDownloader;
 @class ACSURLHTTPRequester;
+@class ACSNetworkConfiguration;
 
 typedef NS_ENUM(NSUInteger, ACSNetworkingErrorCode) {
     ACSNetworkingErrorCodeEmptyData = 0
 };
 
-extern NSString *const ACSNetworkingErrorDomain;
-extern NSString *const ACSNetworkingErrorDescriptionKey;
+ACSNETWORK_EXTERN NSString *const ACSNetworkingErrorDomain;
+ACSNETWORK_EXTERN NSString *const ACSNetworkingErrorDescriptionKey;
 
 @interface ACSRequestManager : NSObject
 
 #ifdef _AFNETWORKING_
+
 + (instancetype)sharedManager;
++ (instancetype)manager;
+- (instancetype)initWithConfiguration:(ACSNetworkConfiguration *) configuration;
 
 - (void)cancelAllOperations;
-- (void)cancelOperationWithIdentifier:(NSString *) identifier;
-/**
- 暂停请求
- 
- @param identifier 请求的标识
- 
- @return 是否暂停成功（无这个请求/请求没有开始/请求已暂停 都会返回NO）
- */
-- (BOOL)pauseOperationWithIdentifier:(NSString *) identifier;
-
-/**
- 恢复请求
- 
- @param identifier 请求的标识
- 
- @return 是否恢复成功（无这个请求/请求没有开始/请求未暂停 都会返回NO）
- */
-- (BOOL)resumeOperationWithIdentifier:(NSString *) identifier;
-- (BOOL)isPausedOperationWithIdentifier:(NSString *) identifier;
-- (BOOL)isExecutingOperationWithIdentifier:(NSString *) identifier;
 
 /**
  请求数据
  
  @param requester 封装的请求对象
- 
- @return operation identifier 当返回nil时，说明使用的是缓存
  */
-- (NSString *)fetchDataFromRequester:(ACSURLHTTPRequester *) requester;
+- (void)fetchDataFromRequester:(ACSURLHTTPRequester *) requester;
 
 /**
  上传文件
  
  @param requester 封装的上传文件的请求对象
- 
- @return operation identifier
  */
-- (NSString *)uploadFileFromRequester:(ACSFileUploader *) requester; 
+- (void)uploadFileFromRequester:(ACSFileUploader *) requester;
 
 /**
  下载文件
  
  @param requester 封装的下载文件的请求对象
- 
- @return operation identifier 当返回nil时，说明使用的是缓存
  */
-- (NSString *)downloadFileFromRequester:(ACSFileDownloader *) requester;
+- (void)downloadFileFromRequester:(ACSFileDownloader *) requester;
 
-#pragma mark - 默认的baseURL
-
-- (NSString *)fetchDataFromPath:(NSString *) path
-                         method:(ACSRequestMethod) method
-                     parameters:(NSDictionary *) parameters
-                     completion:(ACSRequestCompletionHandler) completionBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用fetchDataFromRequester:");
-
-- (NSString *)GET_fetchDataFromPath:(NSString *) path
-                         parameters:(NSDictionary *) parameters
-                         completion:(ACSRequestCompletionHandler) completionBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用fetchDataFromRequester:");
-
-- (NSString *)POST_fetchDataFromPath:(NSString *) path
-                          parameters:(NSDictionary *) parameters
-                          completion:(ACSRequestCompletionHandler) completionBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用fetchDataFromRequester:");
-
-- (NSString *)uploadFileFromPath:(NSString *) path
-                        fileInfo:(NSDictionary *) fileInfo
-                      parameters:(NSDictionary *) parameters
-                        progress:(ACSRequestProgressHandler) progressBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用uploadFileFromRequester:");
-
-- (NSString *)downloadFileFromPath:(NSString *) path
-                          progress:(ACSRequestProgressHandler) progressBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用downloadFileFromRequester:");
-
-#pragma mark - 自定义请求链接
-
-- (NSString *)fetchDataFromURLString:(NSString *) URLString
-                              method:(ACSRequestMethod) method
-                          parameters:(NSDictionary *) parameters
-                          completion:(ACSRequestCompletionHandler) completionBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用fetchDataFromRequester:");
-
-- (NSString *)uploadFileFromURLString:(NSString *) URLString
-                             fileInfo:(NSDictionary *) fileInfo
-                           parameters:(NSDictionary *) parameters
-                             progress:(ACSRequestProgressHandler) progressBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用uploadFileFromRequester:");
-
-- (NSString *)downloadFileFromURLString:(NSString *) URLString
-                               progress:(ACSRequestProgressHandler) progressBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用downloadFileFromRequester:");
 #endif
 
 @end
+
+@interface ACSRequestManager (ACSRequestManagerDeprecated)
+
+#ifdef _AFNETWORKING_
+
+#pragma mark - 默认的baseURL
+
+- (ACSURLHTTPRequester *)fetchDataFromPath:(NSString *) path
+                                    method:(ACSRequestMethod) method
+                                parameters:(NSDictionary *) parameters
+                                completion:(ACSRequestCompletionHandler) completionBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用fetchDataFromRequester:");
+
+- (ACSURLHTTPRequester *)GET_fetchDataFromPath:(NSString *) path
+                                    parameters:(NSDictionary *) parameters
+                                    completion:(ACSRequestCompletionHandler) completionBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用fetchDataFromRequester:");
+
+- (ACSURLHTTPRequester *)POST_fetchDataFromPath:(NSString *) path
+                                     parameters:(NSDictionary *) parameters
+                                     completion:(ACSRequestCompletionHandler) completionBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用fetchDataFromRequester:");
+
+- (ACSFileUploader *)uploadFileFromPath:(NSString *) path
+                               fileInfo:(NSDictionary *) fileInfo
+                             parameters:(NSDictionary *) parameters
+                               progress:(ACSRequestProgressHandler) progressBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用uploadFileFromRequester:");
+
+- (ACSFileDownloader *)downloadFileFromPath:(NSString *) path
+                                   progress:(ACSRequestProgressHandler) progressBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用downloadFileFromRequester:");
+
+#pragma mark - 自定义请求链接
+
+- (ACSURLHTTPRequester *)fetchDataFromURLString:(NSString *) URLString
+                                         method:(ACSRequestMethod) method
+                                     parameters:(NSDictionary *) parameters
+                                     completion:(ACSRequestCompletionHandler) completionBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用fetchDataFromRequester:");
+
+- (ACSFileUploader *)uploadFileFromURLString:(NSString *) URLString
+                                    fileInfo:(NSDictionary *) fileInfo
+                                  parameters:(NSDictionary *) parameters
+                                    progress:(ACSRequestProgressHandler) progressBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用uploadFileFromRequester:");
+
+- (ACSFileDownloader *)downloadFileFromURLString:(NSString *) URLString
+                                        progress:(ACSRequestProgressHandler) progressBlock NS_DEPRECATED(10_2, 10_8, 2_0, 6_0, "请使用downloadFileFromRequester:");
+
+#endif
+
+@end
+
+ACSNETWORK_EXTERN NSData * ACSFileDataFromPath(NSString *path, NSTimeInterval downloadExpirationTimeInterval);
+ACSNETWORK_EXTERN NSString * ACSFilePathFromURL(NSURL *URL, NSString *folderPath, NSString *extension);
+ACSNETWORK_EXTERN unsigned long long ACSFileSizeFromPath(NSString *path);

@@ -24,26 +24,109 @@
 
 #import "ACSURLHTTPRequester.h"
 
+#import "ACSCache.h"
+
 @implementation ACSURLHTTPRequester
 
 @synthesize URL = _URL;
 @synthesize path = _path;
 @synthesize method = _method;
 @synthesize delegate = _delegate;
-@synthesize parameters = _parameters;
+@synthesize operation = _operation;
 @synthesize responseType = _responseType;
-@synthesize operationManager = _operationManager;
 
 #ifdef _AFNETWORKING_
-- (NSMutableURLRequest *)URLRequestFormOperationManager:(AFHTTPRequestOperationManager *)operationManager {
+
+@synthesize parameters = _parameters;
+@synthesize operationManager = _operationManager;
+
+- (void)URLOperationFormManager:(AFHTTPRequestOperationManager *)operationManager
+                cacheExpiration:(NSTimeInterval)timeInterval
+                        success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
+                        failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure {
     _operationManager = operationManager;
     NSURL *__weak tempURL = self.URL ?: [NSURL URLWithString:self.path ?: @"" relativeToURL:operationManager.baseURL];
     self.URL = tempURL;
-    return [operationManager.requestSerializer requestWithMethod:ACSHTTPMethod(self.method)
-                                                       URLString:self.URL.absoluteString
-                                                      parameters:self.parameters
-                                                           error:nil];
+    NSURLRequest *URLRequest = [[operationManager.requestSerializer requestWithMethod:ACSHTTPMethod(self.method)
+                                                                            URLString:self.URL.absoluteString
+                                                                           parameters:self.parameters
+                                                                                error:nil] copy];
+    //取本地缓存
+    id resultObject = [[ACSCache sharedCache] fetchDataFromDiskCacheForURL:URLRequest.URL cacheExpiration:timeInterval];
+    if (resultObject && self.method == ACSRequestMethodGET && self.cacheResponseData) {
+        id tempResult = resultObject;
+        if ([resultObject isKindOfClass:[NSData class]]) {
+            if (self.responseType == ACSResponseTypeJSON) {
+                tempResult = [NSJSONSerialization JSONObjectWithData:resultObject options:NSJSONReadingAllowFragments error:nil];
+            }
+        }
+        else if ([resultObject isKindOfClass:[NSDictionary class]] ||
+                 [resultObject isKindOfClass:[NSArray class]]) {
+            tempResult = [NSJSONSerialization dataWithJSONObject:resultObject options:NSJSONWritingPrettyPrinted error:nil];
+        }
+        
+        if (self.completionBlock) {
+            self.completionBlock(tempResult, nil);
+        }
+        
+        if (self.delegate) {
+            if ([self.delegate respondsToSelector:@selector(request:didReceiveData:)]) {
+                [self.delegate request:self didReceiveData:tempResult];
+            }
+            
+            if ([self.delegate respondsToSelector:@selector(requestDidFinishLoading:)]) {
+                [self.delegate requestDidFinishLoading:self];
+            }
+        }
+        
+        return;
+    }
+    
+    AFHTTPRequestOperation *operation = [operationManager HTTPRequestOperationWithRequest:URLRequest
+                                                                                  success:success
+                                                                                  failure:failure];
+    _operation = operation;
+    [operationManager.operationQueue addOperation:operation];
 }
+
+- (void)cancel {
+    if (!self.operation) {
+        return;
+    }
+    
+    [self.operation cancel];
+}
+
+- (BOOL)pause {
+    
+    if (!self.operation ||
+        [self.operation isPaused]) {
+        return NO;
+    }
+    
+    [self.operation pause];
+    return YES;
+}
+
+- (BOOL)resume {
+    if (!self.operation ||
+        ![self.operation isPaused]) {
+        return NO;
+    }
+    
+    [self.operation resume];
+    return YES;
+}
+
+- (BOOL)isPaused {
+    
+    return [self.operation isPaused];
+}
+
+- (BOOL)isExecuting {
+    return [self.operation isExecuting];
+}
+
 #endif
 
 @end

@@ -52,7 +52,48 @@
 @property (nonatomic, copy) NSDictionary *parameters;
 
 #ifdef _AFNETWORKING_
+
+/**
+ 取消请求
+ */
+- (void)cancel;
+
+/**
+ 暂停请求
+ @return 是否暂停成功（请求不存在/请求已暂停 都会返回NO）
+ */
+- (BOOL)pause;
+
+/**
+ 恢复请求
+ @return 是否恢复成功（请求不存在/请求未暂停 都会返回NO）
+ */
+- (BOOL)resume;
+
+/**
+ 暂停状态
+ 
+ @return 是否暂停
+ */
+- (BOOL)isPaused;
+
+/**
+ 执行状态
+ 
+ @return 是否执行中
+ */
+- (BOOL)isExecuting;
+
+/**
+ 调用请求方法后，方可使用
+ */
+@property (nonatomic, weak, readonly) AFHTTPRequestOperation *operation;
+
+/**
+ 调用完请求方法后，方可使用
+ */
 @property (nonatomic, weak, readonly) AFHTTPRequestOperationManager *operationManager;
-- (NSMutableURLRequest *)URLRequestFormOperationManager:(AFHTTPRequestOperationManager *) operationManager;
+
 #endif
+
 @end
