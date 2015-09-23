@@ -1,6 +1,6 @@
 {
   "name": "ACSNetworking",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "summary": "On the basis of AFNetworking encapsulation.",
   "description": "On the basis of AFNetworking encapsulation, more convenient, more concise.",
   "homepage": "https://github.com/Hyosung/ACSNetworking",
@@ -19,7 +19,7 @@
   "requires_arc": true,
   "source": {
     "git": "https://github.com/Hyosung/ACSNetworking.git",
-    "tag": "0.0.2"
+    "tag": "0.0.3"
   },
   "source_files": [
     "ACSNetworking",

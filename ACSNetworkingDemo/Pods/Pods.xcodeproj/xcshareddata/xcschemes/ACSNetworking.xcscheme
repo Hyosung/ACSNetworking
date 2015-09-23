@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A41B9F05F15810D17963B65A"
+               BlueprintIdentifier = "84AAB27FD042185183722181"
                BuildableName = "libACSNetworking.a"
                BlueprintName = "ACSNetworking"
                ReferencedContainer = "container:Pods.xcodeproj">

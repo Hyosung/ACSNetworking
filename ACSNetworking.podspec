@@ -1,12 +1,12 @@
 Pod::Spec.new do |s|
   s.name         = 'ACSNetworking'
-  s.version      = '0.0.3'
+  s.version      = '0.1.0'
   s.summary      = 'On the basis of AFNetworking encapsulation.'
   s.description  = <<-DESC
-                   On the basis of AFNetworking encapsulation, more convenient, more concise.
+  On the basis of AFNetworking encapsulation, more convenient, more concise.
                    DESC
   s.homepage     = 'https://github.com/Hyosung/ACSNetworking'
-  s.license      = { :type => 'MIT', :file => 'LICENSE' }
+  s.license      = 'MIT'
   s.authors      = { 'Stoney' => 'sy92710xx@gmail.com' }
   s.social_media_url   = 'http://weibo.com/sy4312xx'
   #'http://blog.csdn.net/sy431256wr'
@@ -14,6 +14,6 @@ Pod::Spec.new do |s|
   s.osx.deployment_target = '10.8'
   s.requires_arc = true
   s.source       = { :git => 'https://github.com/Hyosung/ACSNetworking.git', :tag => s.version.to_s }
-  s.source_files  = 'ACSNetworking/**/*.{h,m}'
-  s.dependency 'AFNetworking', '>= 2.6.0'
+  s.source_files = 'ACSNetworking/**/*.{h,m}'
+  s.dependency 'AFNetworking', '~> 2.6.0'
 end
