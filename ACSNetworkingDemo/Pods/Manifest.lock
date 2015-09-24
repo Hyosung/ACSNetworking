@@ -1,5 +1,5 @@
 PODS:
-  - ACSNetworking (0.0.3):
+  - ACSNetworking (1.0.0):
     - AFNetworking (~> 2.6.0)
   - AFNetworking (2.6.0):
     - AFNetworking/NSURLConnection (= 2.6.0)
@@ -31,7 +31,7 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  ACSNetworking: e207b5277d4530f563f1b607c83a50e67a2c734b
+  ACSNetworking: d80add7f54441c6bfaeebb29c742aec5546ed245
   AFNetworking: 79f7eb1a0fcfa7beb409332b2ca49afe9ce53b05
 
 COCOAPODS: 0.38.2

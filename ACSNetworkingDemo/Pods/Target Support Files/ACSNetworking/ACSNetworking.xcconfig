@@ -1,0 +1,1 @@
+ACSNETWORKING_OTHER_LDFLAGS = -framework "CoreTelephony" -framework "Foundation" -framework "MobileCoreServices" -framework "SystemConfiguration" -framework "UIKit"

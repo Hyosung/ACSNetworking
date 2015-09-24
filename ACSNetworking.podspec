@@ -10,9 +10,9 @@ Pod::Spec.new do |s|
   s.authors      = { 'Stoney' => 'sy92710xx@gmail.com' }
   s.social_media_url   = 'http://weibo.com/sy4312xx'
   #'http://blog.csdn.net/sy431256wr'
-  s.ios.deployment_target = '6.0'
-  s.osx.deployment_target = '10.8'
-  s.watchos.deployment_target = '2.0'
+  s.ios.deployment_target = '7.0'
+  s.osx.deployment_target = '10.9'
+  #s.watchos.deployment_target = '2.0'
   s.requires_arc = true
   s.source       = { :git => 'https://github.com/Hyosung/ACSNetworking.git', :tag => s.version.to_s }
   s.source_files = 'ACSNetworking/**/*.{h,m}'
