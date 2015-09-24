@@ -1,9 +1,9 @@
 Pod::Spec.new do |s|
   s.name         = 'ACSNetworking'
-  s.version      = '0.1.0'
+  s.version      = '1.0.0'
   s.summary      = 'On the basis of AFNetworking encapsulation.'
   s.description  = <<-DESC
-  On the basis of AFNetworking encapsulation, more convenient, more concise.
+                   On the basis of AFNetworking encapsulation, more convenient, more concise.
                    DESC
   s.homepage     = 'https://github.com/Hyosung/ACSNetworking'
   s.license      = 'MIT'
@@ -12,8 +12,12 @@ Pod::Spec.new do |s|
   #'http://blog.csdn.net/sy431256wr'
   s.ios.deployment_target = '6.0'
   s.osx.deployment_target = '10.8'
+  s.watchos.deployment_target = '2.0'
   s.requires_arc = true
   s.source       = { :git => 'https://github.com/Hyosung/ACSNetworking.git', :tag => s.version.to_s }
   s.source_files = 'ACSNetworking/**/*.{h,m}'
+  s.ios.frameworks = 'MobileCoreServices', 'UIKit', 'CoreTelephony'
+  s.osx.frameworks = 'CoreServices', 'AppKit'
+  s.frameworks = 'Foundation', 'SystemConfiguration'
   s.dependency 'AFNetworking', '~> 2.6.0'
 end
