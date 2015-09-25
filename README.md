@@ -179,4 +179,4 @@ requester.delegate = self;
 
 ## License
 
-AFNetworking is released under the MIT license. See LICENSE for details.
+ACSNetworking is released under the MIT license. See LICENSE for details.
