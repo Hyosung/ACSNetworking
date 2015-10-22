@@ -73,10 +73,6 @@
             if ([self.delegate respondsToSelector:@selector(request:didReceiveData:)]) {
                 [self.delegate request:self didReceiveData:tempResult];
             }
-            
-            if ([self.delegate respondsToSelector:@selector(requestDidFinishLoading:)]) {
-                [self.delegate requestDidFinishLoading:self];
-            }
         }
         
         return;
@@ -131,40 +127,12 @@
 
 @end
 
+#pragma mark - Path
+
 __attribute__((overloadable)) ACSURLHTTPRequester * ACSCreateRequester(NSString *path, ACSRequestMethod method, NSDictionary *parameters, ACSRequestCompletionHandler completionBlock) {
     ACSURLHTTPRequester *requester = [[ACSURLHTTPRequester alloc] init];
     requester.path = path;
     requester.method = method;
-    requester.parameters = parameters;
-    requester.responseType = ACSResponseTypeJSON;
-    requester.completionBlock = completionBlock;
-    return requester;
-}
-
-__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreateRequester(NSURL *URL, ACSRequestMethod method, NSDictionary *parameters, ACSRequestCompletionHandler completionBlock) {
-    ACSURLHTTPRequester *requester = [[ACSURLHTTPRequester alloc] init];
-    requester.URL = URL;
-    requester.method = method;
-    requester.parameters = parameters;
-    requester.responseType = ACSResponseTypeJSON;
-    requester.completionBlock = completionBlock;
-    return requester;
-}
-
-__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreatePOSTRequester(NSString *path, NSDictionary *parameters, ACSRequestCompletionHandler completionBlock) {
-    ACSURLHTTPRequester *requester = [[ACSURLHTTPRequester alloc] init];
-    requester.path = path;
-    requester.method = ACSRequestMethodPOST;
-    requester.parameters = parameters;
-    requester.responseType = ACSResponseTypeJSON;
-    requester.completionBlock = completionBlock;
-    return requester;
-}
-
-__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreatePOSTRequester(NSURL *URL, NSDictionary *parameters, ACSRequestCompletionHandler completionBlock) {
-    ACSURLHTTPRequester *requester = [[ACSURLHTTPRequester alloc] init];
-    requester.URL = URL;
-    requester.method = ACSRequestMethodPOST;
     requester.parameters = parameters;
     requester.responseType = ACSResponseTypeJSON;
     requester.completionBlock = completionBlock;
@@ -181,10 +149,71 @@ __attribute__((overloadable)) ACSURLHTTPRequester * ACSCreateGETRequester(NSStri
     return requester;
 }
 
+__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreatePOSTRequester(NSString *path, NSDictionary *parameters, ACSRequestCompletionHandler completionBlock) {
+    ACSURLHTTPRequester *requester = [[ACSURLHTTPRequester alloc] init];
+    requester.path = path;
+    requester.method = ACSRequestMethodPOST;
+    requester.parameters = parameters;
+    requester.responseType = ACSResponseTypeJSON;
+    requester.completionBlock = completionBlock;
+    return requester;
+}
+
+#pragma mark - URL
+
+__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreateRequester(NSURL *URL, ACSRequestMethod method, NSDictionary *parameters, ACSRequestCompletionHandler completionBlock) {
+    ACSURLHTTPRequester *requester = [[ACSURLHTTPRequester alloc] init];
+    requester.URL = URL;
+    requester.method = method;
+    requester.parameters = parameters;
+    requester.responseType = ACSResponseTypeJSON;
+    requester.completionBlock = completionBlock;
+    return requester;
+}
+
 __attribute__((overloadable)) ACSURLHTTPRequester * ACSCreateGETRequester(NSURL *URL, NSDictionary *parameters, ACSRequestCompletionHandler completionBlock) {
     ACSURLHTTPRequester *requester = [[ACSURLHTTPRequester alloc] init];
     requester.URL = URL;
     requester.method = ACSRequestMethodGET;
+    requester.parameters = parameters;
+    requester.responseType = ACSResponseTypeJSON;
+    requester.completionBlock = completionBlock;
+    return requester;
+}
+
+__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreatePOSTRequester(NSURL *URL, NSDictionary *parameters, ACSRequestCompletionHandler completionBlock) {
+    ACSURLHTTPRequester *requester = [[ACSURLHTTPRequester alloc] init];
+    requester.URL = URL;
+    requester.method = ACSRequestMethodPOST;
+    requester.parameters = parameters;
+    requester.responseType = ACSResponseTypeJSON;
+    requester.completionBlock = completionBlock;
+    return requester;
+}
+
+#pragma mark - Default BaseURL
+
+__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreateRequester(ACSRequestMethod method, NSDictionary *parameters, ACSRequestCompletionHandler completionBlock) {
+    ACSURLHTTPRequester *requester = [[ACSURLHTTPRequester alloc] init];
+    requester.method = method;
+    requester.parameters = parameters;
+    requester.responseType = ACSResponseTypeJSON;
+    requester.completionBlock = completionBlock;
+    return requester;
+}
+
+__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreateGETRequester(NSDictionary *parameters, ACSRequestCompletionHandler completionBlock) {
+    ACSURLHTTPRequester *requester = [[ACSURLHTTPRequester alloc] init];
+    requester.method = ACSRequestMethodGET;
+    requester.parameters = parameters;
+    requester.responseType = ACSResponseTypeJSON;
+    requester.completionBlock = completionBlock;
+    return requester;
+}
+
+__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreatePOSTRequester(NSDictionary *parameters, ACSRequestCompletionHandler completionBlock) {
+    ACSURLHTTPRequester *requester = [[ACSURLHTTPRequester alloc] init];
+    requester.method = ACSRequestMethodPOST;
     requester.parameters = parameters;
     requester.responseType = ACSResponseTypeJSON;
     requester.completionBlock = completionBlock;

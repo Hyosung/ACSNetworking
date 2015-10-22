@@ -10,9 +10,8 @@
   },
   "social_media_url": "http://weibo.com/sy4312xx",
   "platforms": {
-    "ios": "6.0",
-    "osx": "10.8",
-    "watchos": "2.0"
+    "ios": "7.0",
+    "osx": "10.9"
   },
   "requires_arc": true,
   "source": {

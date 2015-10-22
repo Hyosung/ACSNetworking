@@ -8,12 +8,14 @@
 
 #import "AppDelegate.h"
 
+#import <ACSNetworking.h>
+
 @implementation AppDelegate
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-
+    [ACSNetworkConfiguration defaultConfiguration].baseURL = [NSURL URLWithString:@"http://example.com"];
     return YES;
 }
 

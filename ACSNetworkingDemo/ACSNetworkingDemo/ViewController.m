@@ -68,19 +68,19 @@
     self.ac_fileLabel.text = @"下载完成";
 }
 
-- (void)request:(id<ACSURLHTTPRequest>)requester didFailWithError:(NSError *)error {
-    NSLog(@"error%@", error);
+- (void)request:(id<ACSURLHTTPRequest>)requester didFailToProcessForDataWithError:(NSError *)error {
+    NSLog(@"didFailToProcessForDataWithError %@", error);
+    self.ac_fileLabel.text = @"处理数据失败";
+}
+
+- (void)request:(id<ACSURLHTTPRequest>)requester didFailToRequestForDataWithError:(NSError *)error {
+    NSLog(@"didFailToRequestForDataWithError %@", error);
     self.ac_fileLabel.text = @"下载失败";
 }
 
 - (void)request:(id<ACSURLFileRequest>)requester didFileProgressing:(ACSRequestProgress)progress {
 //    NSLog(@"%lu, %lld, %lld", (unsigned long)progress.bytes, progress.totalBytes, progress.totalBytesExpected);
     self.ac_fileProgressView.progress = progress.progressValue;
-}
-
-- (void)requestDidFinishLoading:(id<ACSURLHTTPRequest>)requester {
-    NSLog(@"加载完成");
-    
 }
 
 - (IBAction)pauseDownloadFile:(UIButton *)sender {

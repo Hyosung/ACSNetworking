@@ -182,3 +182,10 @@ __attribute__((overloadable)) ACSFileUploader * ACSCreateUploader(NSURL *URL, NS
     uploader.progressBlock = progressBlock;
     return uploader;
 }
+
+__attribute__((overloadable)) ACSFileUploader * ACSCreateUploader(NSDictionary *fileInfo, ACSRequestProgressHandler progressBlock) {
+    ACSFileUploader *uploader = [[ACSFileUploader alloc] init];
+    uploader.fileInfo = fileInfo;
+    uploader.progressBlock = progressBlock;
+    return uploader;
+}

@@ -36,7 +36,10 @@
 @end
 
 extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSString *path, ACSRequestProgressHandler progressBlock);
-extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSURL *URL, ACSRequestProgressHandler progressBlock);
-
 extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSString *path, BOOL shouldResume, ACSRequestProgressHandler progressBlock);
+
+extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSURL *URL, ACSRequestProgressHandler progressBlock);
 extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSURL *URL, BOOL shouldResume, ACSRequestProgressHandler progressBlock);
+
+extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(ACSRequestProgressHandler progressBlock);
+extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(BOOL shouldResume, ACSRequestProgressHandler progressBlock);

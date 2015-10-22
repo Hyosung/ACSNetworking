@@ -31,10 +31,19 @@
 
 @property (nonatomic, strong) NSURL *baseURL;
 
+/**
+ 默认 [AFHTTPRequestSerializer serializer]
+ */
 @property (nonatomic, strong) AFHTTPRequestSerializer <AFURLRequestSerialization> * requestSerializer;
 
+/**
+ 默认 [AFHTTPResponseSerializer serializer]
+ */
 @property (nonatomic, strong) AFHTTPResponseSerializer <AFURLResponseSerialization> * responseSerializer;
 
+/**
+ 默认 [AFSecurityPolicy defaultPolicy]
+ */
 @property (nonatomic, strong) AFSecurityPolicy *securityPolicy;
 
 /**

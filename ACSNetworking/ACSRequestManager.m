@@ -200,7 +200,7 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromContentType(NSString *conten
 
 - (void)fetchDataFromRequester:(ACSURLHTTPRequester *) requester {
     NSAssert(requester, @"requester不能为nil");
-    NSAssert(requester.path || requester.URL, @"path与URL只能填写其中一个");
+    NSAssert(!(requester.path && requester.URL), @"path与URL只能填写其中一个");
     NSAssert(requester.responseType == ACSResponseTypeJSON || requester.responseType == ACSResponseTypeData, @"responseType暂只支持JSON与data");
     
 #pragma clang diagnostic push
@@ -228,7 +228,7 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromContentType(NSString *conten
 
 - (void)uploadFileFromRequester:(ACSFileUploader *) requester {
     NSAssert(requester, @"requester不能为nil");
-    NSAssert(requester.path || requester.URL, @"path与URL只能填写其中一个");
+    NSAssert(!(requester.path && requester.URL), @"path与URL只能填写其中一个");
     NSAssert(requester.responseType == ACSResponseTypeJSON || requester.responseType == ACSResponseTypeData, @"responseType暂只支持JSON与data");
     
 #pragma clang diagnostic push
@@ -253,7 +253,7 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromContentType(NSString *conten
 
 - (void)downloadFileFromRequester:(ACSFileDownloader *) requester {
     NSAssert(requester, @"requester不能为nil");
-    NSAssert(requester.path || requester.URL, @"path与URL只能填写其中一个");
+    NSAssert(!(requester.path && requester.URL), @"path与URL只能填写其中一个");
     NSAssert(requester.responseType != ACSResponseTypeJSON || requester.responseType == ACSResponseTypeData, @"responseType暂不只支持JSON");
     
 #pragma clang diagnostic push
@@ -311,16 +311,12 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromContentType(NSString *conten
             }
             
             if (requester.delegate) {
-                if ([requester.delegate respondsToSelector:@selector(request:didReceiveData:)] && resultObject) {
+                if ([requester.delegate respondsToSelector:@selector(request:didReceiveData:)]) {
                     [requester.delegate request:requester didReceiveData:resultObject];
                 }
                 
-                if ([requester.delegate respondsToSelector:@selector(request:didFailWithError:)] && error) {
-                    [requester.delegate request:requester didFailWithError:error];
-                }
-                
-                if ([requester.delegate respondsToSelector:@selector(requestDidFinishLoading:)]) {
-                    [requester.delegate requestDidFinishLoading:requester];
+                if ([requester.delegate respondsToSelector:@selector(request:didFailToProcessForDataWithError:)] && error) {
+                    [requester.delegate request:requester didFailToProcessForDataWithError:error];
                 }
             }
         }
@@ -371,13 +367,13 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromContentType(NSString *conten
                 ((ACSFileDownloader *)requester).progressBlock(ACSRequestProgressZero, resultData, nil);
             }
             if (requester.delegate) {
-                if ([requester.delegate respondsToSelector:@selector(request:didReceiveData:)] && resultData) {
+                if ([requester.delegate respondsToSelector:@selector(request:didReceiveData:)]) {
                     [requester.delegate request:requester didReceiveData:resultData];
                 }
                 
-                if ([requester.delegate respondsToSelector:@selector(request:didFailWithError:)] && !resultData) {
+                if ([requester.delegate respondsToSelector:@selector(request:didFailToProcessForDataWithError:)] && !resultData) {
                     NSError *error = [NSError errorWithDomain:ACSNetworkingErrorDomain code:ACSNetworkingErrorCodeEmptyData userInfo:@{ACSNetworkingErrorDescriptionKey: @"Empty Data"}];
-                    [requester.delegate request:requester didFailWithError:error];
+                    [requester.delegate request:requester didFailToProcessForDataWithError:error];
                 }
             }
         }
@@ -396,19 +392,13 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromContentType(NSString *conten
             }
             
             if (requester.delegate) {
-                if ([requester.delegate respondsToSelector:@selector(request:didReceiveData:)] && resultObject) {
+                if ([requester.delegate respondsToSelector:@selector(request:didReceiveData:)]) {
                     [requester.delegate request:requester didReceiveData:resultObject];
                 }
                 
-                if ([requester.delegate respondsToSelector:@selector(request:didFailWithError:)] && error) {
-                    [requester.delegate request:requester didFailWithError:error];
+                if ([requester.delegate respondsToSelector:@selector(request:didFailToProcessForDataWithError:)] && error) {
+                    [requester.delegate request:requester didFailToProcessForDataWithError:error];
                 }
-            }
-        }
-        
-        if (requester.delegate) {
-            if ([requester.delegate respondsToSelector:@selector(requestDidFinishLoading:)]) {
-                [requester.delegate requestDidFinishLoading:requester];
             }
         }
     };
@@ -439,8 +429,8 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromContentType(NSString *conten
                     [requester.delegate request:requester didReceiveData:resultObject];
                 }
                 
-                if ([requester.delegate respondsToSelector:@selector(request:didFailWithError:)] && error) {
-                    [requester.delegate request:requester didFailWithError:error];
+                if ([requester.delegate respondsToSelector:@selector(request:didFailToRequestForDataWithError:)] && error) {
+                    [requester.delegate request:requester didFailToRequestForDataWithError:error];
                 }
             }
         }
@@ -450,14 +440,9 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromContentType(NSString *conten
                 ((id <ACSURLFileRequest>)requester).progressBlock(ACSRequestProgressZero, nil, error);
             }
             if (requester.delegate) {
-                if ([requester.delegate respondsToSelector:@selector(request:didFailWithError:)]) {
-                    [requester.delegate request:requester didFailWithError:error];
+                if ([requester.delegate respondsToSelector:@selector(request:didFailToRequestForDataWithError:)]) {
+                    [requester.delegate request:requester didFailToRequestForDataWithError:error];
                 }
-            }
-        }
-        if (requester.delegate) {
-            if ([requester.delegate respondsToSelector:@selector(requestDidFinishLoading:)]) {
-                [requester.delegate requestDidFinishLoading:requester];
             }
         }
     };
@@ -467,7 +452,9 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromContentType(NSString *conten
 
 @end
 
-@implementation ACSRequestManager (ACSRequestManagerDeprecated)
+#pragma mark - 旧写法
+
+@implementation ACSRequestManager (ACSRequestManagerBlockOld)
 
 #ifdef _AFNETWORKING_
 

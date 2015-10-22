@@ -32,3 +32,4 @@
 
 extern __attribute__((overloadable)) ACSFileUploader * ACSCreateUploader(NSString *path, NSDictionary *fileInfo, ACSRequestProgressHandler progressBlock);
 extern __attribute__((overloadable)) ACSFileUploader * ACSCreateUploader(NSURL *URL, NSDictionary *fileInfo, ACSRequestProgressHandler progressBlock);
+extern __attribute__((overloadable)) ACSFileUploader * ACSCreateUploader(NSDictionary *fileInfo, ACSRequestProgressHandler progressBlock);

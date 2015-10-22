@@ -31,9 +31,24 @@
 
 @optional
 
+/**
+ 请求成功后，接收到的数据
+ */
 - (void)request:(id <ACSURLHTTPRequest>) requester didReceiveData:(id) data;
-- (void)request:(id <ACSURLHTTPRequest>) requester didFailWithError:(NSError *) error;
+
+/**
+ 文件上传、下载过程
+ */
 - (void)request:(id <ACSURLFileRequest>) requester didFileProgressing:(ACSRequestProgress) progress;
-- (void)requestDidFinishLoading:(id <ACSURLHTTPRequest>) requester;
+
+/**
+ （请求已完成）处理数据时，产生的错误
+ */
+- (void)request:(id <ACSURLHTTPRequest>) requester didFailToProcessForDataWithError:(NSError *) error;
+
+/**
+ （请求未开始或进行中）请求数据时，产生的错误
+ */
+- (void)request:(id <ACSURLHTTPRequest>) requester didFailToRequestForDataWithError:(NSError *) error;
 
 @end

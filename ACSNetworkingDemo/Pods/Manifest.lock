@@ -31,7 +31,7 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  ACSNetworking: d80add7f54441c6bfaeebb29c742aec5546ed245
+  ACSNetworking: e52e91038b535ea944a9e2add9b4b944e7cbe01b
   AFNetworking: 79f7eb1a0fcfa7beb409332b2ca49afe9ce53b05
 
 COCOAPODS: 0.38.2
