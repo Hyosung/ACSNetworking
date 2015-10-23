@@ -35,11 +35,15 @@
 
 @end
 
-extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSString *path, ACSRequestProgressHandler progressBlock);
-extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSString *path, BOOL shouldResume, ACSRequestProgressHandler progressBlock);
+/**
+ callback只能为id <ACSURLRequesterDelegate>/ACSRequestProgressHandler/NULL
+ */
 
-extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSURL *URL, ACSRequestProgressHandler progressBlock);
-extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSURL *URL, BOOL shouldResume, ACSRequestProgressHandler progressBlock);
+extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSString *path, id callback);
+extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSString *path, BOOL shouldResume, id callback);
 
-extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(ACSRequestProgressHandler progressBlock);
-extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(BOOL shouldResume, ACSRequestProgressHandler progressBlock);
+extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSURL *URL, id callback);
+extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSURL *URL, BOOL shouldResume, id callback);
+
+extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(id callback);
+extern __attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(BOOL shouldResume, id callback);

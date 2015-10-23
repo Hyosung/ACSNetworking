@@ -280,13 +280,12 @@
                         success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
                         failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure {
     _operationManager = operationManager;
-    NSURL *__weak tempURL = self.URL ?: [NSURL URLWithString:self.path ?: @""
-                                               relativeToURL:operationManager.baseURL];
-    self.URL = tempURL;
-    NSMutableURLRequest *URLRequest = [[operationManager.requestSerializer requestWithMethod:@"GET"
-                                                                                   URLString:self.URL.absoluteString
-                                                                                  parameters:self.parameters
-                                                                                       error:nil] mutableCopy];
+    self.URL = self.URL ?: [NSURL URLWithString:self.path ?: @""
+                                  relativeToURL:operationManager.baseURL];
+    NSURLRequest *URLRequest = [[operationManager.requestSerializer requestWithMethod:@"GET"
+                                                                            URLString:self.URL.absoluteString
+                                                                           parameters:self.parameters
+                                                                                error:nil] copy];
     
     NSString *filePath = [[ACSCache sharedCache] fetchAbsolutePathforURL:self.URL];
     NSData *fileData = ACSFileDataFromPath(filePath, timeInterval);
@@ -414,54 +413,67 @@
 
 @end
 
+ACSNETWORK_STATIC_INLINE void ACSSetupCallback(ACSFileDownloader **downloader, id *callback) {
+    if (*callback) {
+        if ([(*callback) conformsToProtocol:@protocol(ACSURLRequesterDelegate)]) {
+            (*downloader).delegate = *callback;
+        }
+        else {
+            if (strstr(object_getClassName(*callback), "Block") != NULL) {
+                (*downloader).progressBlock = *callback;
+            }
+        }
+    }
+}
+
 #pragma mark - Path
 
-__attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSString *path, BOOL shouldResume, ACSRequestProgressHandler progressBlock) {
+__attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSString *path, BOOL shouldResume, id callback) {
     ACSFileDownloader *downloader = [[ACSFileDownloader alloc] initWithShouldResume:shouldResume];
     downloader.path = path;
     downloader.responseType = ACSResponseTypeFilePath;
-    downloader.progressBlock = progressBlock;
+    ACSSetupCallback(&downloader, &callback);
     return downloader;
 }
 
-__attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSString *path, ACSRequestProgressHandler progressBlock) {
+__attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSString *path, id callback) {
     ACSFileDownloader *downloader = [[ACSFileDownloader alloc] init];
     downloader.path = path;
     downloader.responseType = ACSResponseTypeFilePath;
-    downloader.progressBlock = progressBlock;
+    ACSSetupCallback(&downloader, &callback);
     return downloader;
 }
 
 #pragma mark - URL
 
-__attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSURL *URL, ACSRequestProgressHandler progressBlock) {
+__attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSURL *URL, id callback) {
     ACSFileDownloader *downloader = [[ACSFileDownloader alloc] init];
     downloader.URL = URL;
     downloader.responseType = ACSResponseTypeFilePath;
-    downloader.progressBlock = progressBlock;
+    ACSSetupCallback(&downloader, &callback);
     return downloader;
 }
 
-__attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSURL *URL, BOOL shouldResume, ACSRequestProgressHandler progressBlock) {
+__attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(NSURL *URL, BOOL shouldResume, id callback) {
     ACSFileDownloader *downloader = [[ACSFileDownloader alloc] initWithShouldResume:shouldResume];
     downloader.URL = URL;
     downloader.responseType = ACSResponseTypeFilePath;
-    downloader.progressBlock = progressBlock;
+    ACSSetupCallback(&downloader, &callback);
     return downloader;
 }
 
 #pragma mark - Default BaseURL
 
-__attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(ACSRequestProgressHandler progressBlock) {
+__attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(id callback) {
     ACSFileDownloader *downloader = [[ACSFileDownloader alloc] init];
     downloader.responseType = ACSResponseTypeFilePath;
-    downloader.progressBlock = progressBlock;
+    ACSSetupCallback(&downloader, &callback);
     return downloader;
 }
 
-__attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(BOOL shouldResume, ACSRequestProgressHandler progressBlock) {
+__attribute__((overloadable)) ACSFileDownloader * ACSCreateDownloader(BOOL shouldResume, id callback) {
     ACSFileDownloader *downloader = [[ACSFileDownloader alloc] initWithShouldResume:shouldResume];
     downloader.responseType = ACSResponseTypeFilePath;
-    downloader.progressBlock = progressBlock;
+    ACSSetupCallback(&downloader, &callback);
     return downloader;
 }

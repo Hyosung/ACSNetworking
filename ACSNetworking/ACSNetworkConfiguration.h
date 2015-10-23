@@ -47,14 +47,9 @@
 @property (nonatomic, strong) AFSecurityPolicy *securityPolicy;
 
 /**
- 下载文件的存放文件夹 默认 ~Document/Download
+ 下载文件的存放文件夹 ~/Document/com.stoney.ACSNetworking_Download
  */
 @property (nonatomic, copy, readonly) NSString *downloadFolder;
-
-/**
- 下载文件的存放文件夹的名称 默认 Download
- */
-@property (nonatomic, copy) NSString *downloadFolderName;
 
 /**
  下载文件的过期时间 默认一周 (60.0 * 60.0 * 24.0 * 7)s

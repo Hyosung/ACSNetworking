@@ -30,7 +30,6 @@
  
  AppDelegate.m -> application:didFinishLaunchingWithOptions:
  [ACSNetworkConfiguration defaultConfiguration].baseURL = [NSURL URLWithString:@"http://example.com"];
- [ACSNetworkConfiguration defaultConfiguration].downloadFolderName = @"MyDownload";
  [ACSNetworkConfiguration defaultConfiguration].downloadExpirationTimeInterval = 60.0 * 60.0 * 24.0; //One day
  [ACSNetworkConfiguration defaultConfiguration].timeoutInterval = 60.0; //One minute
  [ACSNetworkConfiguration defaultConfiguration].cacheExpirationTimeInterval = 60.0 * 2; //Two minutes
@@ -44,8 +43,7 @@
  })];
  
  ------>Delegate
- ACSURLHTTPRequester *requester = ACSCreateGETRequester(@"path", @{@"key": @"value"}, NULL);
- requester.delegate = self;
+ ACSURLHTTPRequester *requester = ACSCreateGETRequester(@"path", @{@"key": @"value"}, self);
  [[ACSRequestManager sharedManager] fetchDataFromRequester:requester];
  
  POST Request
@@ -56,8 +54,7 @@
  })];
  
  ------>Delegate
- ACSURLHTTPRequester *requester = ACSCreatePOSTRequester(@"path", @{@"key": @"value"}, NULL);
- requester.delegate = self;
+ ACSURLHTTPRequester *requester = ACSCreatePOSTRequester(@"path", @{@"key": @"value"}, self);
  [[ACSRequestManager sharedManager] fetchDataFromRequester:requester];
  
  Upload File (fileValue Supported formats NSURL/NSString/UIImage/NSData)
@@ -68,8 +65,7 @@
  })];
  
  ------>Delegate
- ACSFileUploader *uploader = ACSCreateUploader(@"uploadFile", @{@"fileKey": @"fileValue"}, NULL);
- uploader.delegate = self;
+ ACSFileUploader *uploader = ACSCreateUploader(@"uploadFile", @{@"fileKey": @"fileValue"}, self);
  [[ACSRequestManager sharedManager] fetchDataFromRequester:uploader];
  
  Download File 
@@ -80,8 +76,7 @@
  })];
  
  ------>Delegate
- ACSFileDownloader *downloader = ACSCreateDownloader(@"downloadFile", NULL);
- downloader.delegate = self;
+ ACSFileDownloader *downloader = ACSCreateDownloader(@"downloadFile", self);
  [[ACSRequestManager sharedManager] fetchDataFromRequester:downloader];
  
  **/

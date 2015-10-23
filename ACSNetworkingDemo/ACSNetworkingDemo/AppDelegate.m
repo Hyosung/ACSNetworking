@@ -15,7 +15,14 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    [ACSNetworkConfiguration defaultConfiguration].baseURL = [NSURL URLWithString:@"http://example.com"];
+//    [ACSNetworkConfiguration defaultConfiguration].baseURL = [NSURL URLWithString:@"http://example.com"];
+//    [ACSNetworkConfiguration defaultConfiguration].cacheExpirationTimeInterval = 180.0;
+//    [ACSNetworkConfiguration defaultConfiguration].downloadExpirationTimeInterval = 60.0 * 60.0 * 24.0 * 7;
+//    
+//    [ACSNetworkConfiguration defaultConfiguration].securityPolicy = [AFSecurityPolicy defaultPolicy];
+//    [ACSNetworkConfiguration defaultConfiguration].requestSerializer = [AFHTTPRequestSerializer serializer];
+//    [ACSNetworkConfiguration defaultConfiguration].responseSerializer = [AFHTTPResponseSerializer serializer];
+    
     return YES;
 }
 

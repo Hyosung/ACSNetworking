@@ -43,7 +43,7 @@
         //https://codeload.github.com/xujingzhou/VideoBeautify/zip/master
         //http://free2.macx.cn:8182/tools/other4/QuartzCode1-36-2.dmg
         NSURL *URL = [NSURL URLWithString:@"http://free2.macx.cn:8182/tools/other4/QuartzCode1-36-2.dmg"];
-        self.fileDownloader = ACSCreateDownloader(URL, NULL
+        self.fileDownloader = ACSCreateDownloader(URL, self
                                                   
                                                   /*^(ACSRequestProgress progress, NSString *filePath, NSError *error) {
             if (error) {
@@ -58,7 +58,6 @@
                 }
             }
         }*/);
-        self.fileDownloader.delegate = self;
         [[ACSRequestManager sharedManager] downloadFileFromRequester:self.fileDownloader];
     }
 }

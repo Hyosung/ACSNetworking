@@ -45,8 +45,7 @@
                         success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
                         failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure {
     _operationManager = operationManager;
-    NSURL *__weak tempURL = self.URL ?: [NSURL URLWithString:self.path ?: @"" relativeToURL:operationManager.baseURL];
-    self.URL = tempURL;
+    self.URL = self.URL ?: [NSURL URLWithString:self.path ?: @"" relativeToURL:operationManager.baseURL];
     NSURLRequest *URLRequest = [[operationManager.requestSerializer requestWithMethod:ACSHTTPMethod(self.method)
                                                                             URLString:self.URL.absoluteString
                                                                            parameters:self.parameters
@@ -127,95 +126,108 @@
 
 @end
 
+ACSNETWORK_STATIC_INLINE void ACSSetupCallback(ACSURLHTTPRequester **requester, id *callback) {
+    if (*callback) {
+        if ([(*callback) conformsToProtocol:@protocol(ACSURLRequesterDelegate)]) {
+            (*requester).delegate = *callback;
+        }
+        else {
+            if (strstr(object_getClassName(*callback), "Block") != NULL) {
+                (*requester).completionBlock = *callback;
+            }
+        }
+    }
+}
+
 #pragma mark - Path
 
-__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreateRequester(NSString *path, ACSRequestMethod method, NSDictionary *parameters, ACSRequestCompletionHandler completionBlock) {
+__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreateRequester(NSString *path, ACSRequestMethod method, NSDictionary *parameters, id callback) {
     ACSURLHTTPRequester *requester = [[ACSURLHTTPRequester alloc] init];
     requester.path = path;
     requester.method = method;
     requester.parameters = parameters;
     requester.responseType = ACSResponseTypeJSON;
-    requester.completionBlock = completionBlock;
+    ACSSetupCallback(&requester, &callback);
     return requester;
 }
 
-__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreateGETRequester(NSString *path, NSDictionary *parameters, ACSRequestCompletionHandler completionBlock) {
+__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreateGETRequester(NSString *path, NSDictionary *parameters, id callback) {
     ACSURLHTTPRequester *requester = [[ACSURLHTTPRequester alloc] init];
     requester.path = path;
     requester.method = ACSRequestMethodGET;
     requester.parameters = parameters;
     requester.responseType = ACSResponseTypeJSON;
-    requester.completionBlock = completionBlock;
+    ACSSetupCallback(&requester, &callback);
     return requester;
 }
 
-__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreatePOSTRequester(NSString *path, NSDictionary *parameters, ACSRequestCompletionHandler completionBlock) {
+__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreatePOSTRequester(NSString *path, NSDictionary *parameters, id callback) {
     ACSURLHTTPRequester *requester = [[ACSURLHTTPRequester alloc] init];
     requester.path = path;
     requester.method = ACSRequestMethodPOST;
     requester.parameters = parameters;
     requester.responseType = ACSResponseTypeJSON;
-    requester.completionBlock = completionBlock;
+    ACSSetupCallback(&requester, &callback);
     return requester;
 }
 
 #pragma mark - URL
 
-__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreateRequester(NSURL *URL, ACSRequestMethod method, NSDictionary *parameters, ACSRequestCompletionHandler completionBlock) {
+__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreateRequester(NSURL *URL, ACSRequestMethod method, NSDictionary *parameters, id callback) {
     ACSURLHTTPRequester *requester = [[ACSURLHTTPRequester alloc] init];
     requester.URL = URL;
     requester.method = method;
     requester.parameters = parameters;
     requester.responseType = ACSResponseTypeJSON;
-    requester.completionBlock = completionBlock;
+    ACSSetupCallback(&requester, &callback);
     return requester;
 }
 
-__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreateGETRequester(NSURL *URL, NSDictionary *parameters, ACSRequestCompletionHandler completionBlock) {
+__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreateGETRequester(NSURL *URL, NSDictionary *parameters, id callback) {
     ACSURLHTTPRequester *requester = [[ACSURLHTTPRequester alloc] init];
     requester.URL = URL;
     requester.method = ACSRequestMethodGET;
     requester.parameters = parameters;
     requester.responseType = ACSResponseTypeJSON;
-    requester.completionBlock = completionBlock;
+    ACSSetupCallback(&requester, &callback);
     return requester;
 }
 
-__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreatePOSTRequester(NSURL *URL, NSDictionary *parameters, ACSRequestCompletionHandler completionBlock) {
+__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreatePOSTRequester(NSURL *URL, NSDictionary *parameters, id callback) {
     ACSURLHTTPRequester *requester = [[ACSURLHTTPRequester alloc] init];
     requester.URL = URL;
     requester.method = ACSRequestMethodPOST;
     requester.parameters = parameters;
     requester.responseType = ACSResponseTypeJSON;
-    requester.completionBlock = completionBlock;
+    ACSSetupCallback(&requester, &callback);
     return requester;
 }
 
 #pragma mark - Default BaseURL
 
-__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreateRequester(ACSRequestMethod method, NSDictionary *parameters, ACSRequestCompletionHandler completionBlock) {
+__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreateRequester(ACSRequestMethod method, NSDictionary *parameters, id callback) {
     ACSURLHTTPRequester *requester = [[ACSURLHTTPRequester alloc] init];
     requester.method = method;
     requester.parameters = parameters;
     requester.responseType = ACSResponseTypeJSON;
-    requester.completionBlock = completionBlock;
+    ACSSetupCallback(&requester, &callback);
     return requester;
 }
 
-__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreateGETRequester(NSDictionary *parameters, ACSRequestCompletionHandler completionBlock) {
+__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreateGETRequester(NSDictionary *parameters, id callback) {
     ACSURLHTTPRequester *requester = [[ACSURLHTTPRequester alloc] init];
     requester.method = ACSRequestMethodGET;
     requester.parameters = parameters;
     requester.responseType = ACSResponseTypeJSON;
-    requester.completionBlock = completionBlock;
+    ACSSetupCallback(&requester, &callback);
     return requester;
 }
 
-__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreatePOSTRequester(NSDictionary *parameters, ACSRequestCompletionHandler completionBlock) {
+__attribute__((overloadable)) ACSURLHTTPRequester * ACSCreatePOSTRequester(NSDictionary *parameters, id callback) {
     ACSURLHTTPRequester *requester = [[ACSURLHTTPRequester alloc] init];
     requester.method = ACSRequestMethodPOST;
     requester.parameters = parameters;
     requester.responseType = ACSResponseTypeJSON;
-    requester.completionBlock = completionBlock;
+    ACSSetupCallback(&requester, &callback);
     return requester;
 }

@@ -30,6 +30,10 @@
 
 @end
 
-extern __attribute__((overloadable)) ACSFileUploader * ACSCreateUploader(NSString *path, NSDictionary *fileInfo, ACSRequestProgressHandler progressBlock);
-extern __attribute__((overloadable)) ACSFileUploader * ACSCreateUploader(NSURL *URL, NSDictionary *fileInfo, ACSRequestProgressHandler progressBlock);
-extern __attribute__((overloadable)) ACSFileUploader * ACSCreateUploader(NSDictionary *fileInfo, ACSRequestProgressHandler progressBlock);
+/**
+ callback只能为id <ACSURLRequesterDelegate>/ACSRequestProgressHandler/NULL
+ */
+
+extern __attribute__((overloadable)) ACSFileUploader * ACSCreateUploader(NSString *path, NSDictionary *fileInfo, id callback);
+extern __attribute__((overloadable)) ACSFileUploader * ACSCreateUploader(NSURL *URL, NSDictionary *fileInfo, id callback);
+extern __attribute__((overloadable)) ACSFileUploader * ACSCreateUploader(NSDictionary *fileInfo, id callback);

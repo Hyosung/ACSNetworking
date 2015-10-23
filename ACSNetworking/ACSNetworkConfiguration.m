@@ -80,9 +80,10 @@
         });
         
         _requestSerializer.timeoutInterval = 30.0;
-        [self setDownloadFolderName:@"Download"];
         _cacheExpirationTimeInterval = 60.0 * 3;
         _downloadExpirationTimeInterval = (60.0 * 60.0 * 24.0 * 7);
+        
+        [self createDownloadFolder];
         
 #if TARGET_OS_IPHONE
         [self addObservers];
@@ -99,32 +100,23 @@
     return _requestSerializer.timeoutInterval;
 }
 
-- (void)setDownloadFolderName:(NSString *)downloadFolderName {
-    NSParameterAssert(downloadFolderName && ![[downloadFolderName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@""]);
+/**
+ 创建下载目录
+ */
+- (void)createDownloadFolder {
+    NSString *docmentPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+    NSString *tempDownloadFolder = [docmentPath stringByAppendingPathComponent:@"com.stoney.ACSNetworking_Download"];
     
-    if (![_downloadFolderName isEqualToString:downloadFolderName]) {
-        NSString *docmentPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-        NSString *tempDownloadFolder = [docmentPath stringByAppendingPathComponent:downloadFolderName];
+    NSError *error = nil;
+    if (![_fileManager fileExistsAtPath:tempDownloadFolder]) {
         
-        if (_downloadFolderName) {
-            NSAssert(![_fileManager fileExistsAtPath:tempDownloadFolder], @"文件夹名字已被使用，请重新换一个名字");
-            //移动已有的文件夹到指定的路径上（实则是修改文件夹名称）
-            [_fileManager moveItemAtPath:_downloadFolder
-                                  toPath:tempDownloadFolder
-                                   error:nil];
-        }
-        else {
-            if (![_fileManager fileExistsAtPath:tempDownloadFolder]) {
-                [_fileManager createDirectoryAtPath:tempDownloadFolder
-                        withIntermediateDirectories:YES
-                                         attributes:nil
-                                              error:NULL];
-            }
-        }
-        
-        _downloadFolder = tempDownloadFolder;
-        _downloadFolderName = downloadFolderName;
+        [_fileManager createDirectoryAtPath:tempDownloadFolder
+                withIntermediateDirectories:YES
+                                 attributes:nil
+                                      error:&error];
     }
+    
+    _downloadFolder = tempDownloadFolder;
 }
 
 #pragma mark - Private

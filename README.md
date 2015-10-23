@@ -38,6 +38,23 @@ pod "ACSNetworking", "~> 1.0.0"
 
 ## 用法
 
+#### Configuration
+
+```objective-c
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    // Override point for customization after application launch.
+    [ACSNetworkConfiguration defaultConfiguration].baseURL = [NSURL URLWithString:@"http://example.com"];
+    [ACSNetworkConfiguration defaultConfiguration].cacheExpirationTimeInterval = 180.0;
+    [ACSNetworkConfiguration defaultConfiguration].downloadExpirationTimeInterval = 60.0 * 60.0 * 24.0 * 7;
+    
+    [ACSNetworkConfiguration defaultConfiguration].securityPolicy = [AFSecurityPolicy defaultPolicy];
+    [ACSNetworkConfiguration defaultConfiguration].requestSerializer = [AFHTTPRequestSerializer serializer];
+    [ACSNetworkConfiguration defaultConfiguration].responseSerializer = [AFHTTPResponseSerializer serializer];
+    
+    return YES;
+}
+```
+
 #### `GET` Request
 
 ```objective-c
@@ -57,12 +74,15 @@ ACSURLHTTPRequester *requester = ACSCreateGETRequester([NSURL URLWithString:@"ht
 ```objective-c
 // Delegate
 ACSRequestManager *manager = [ACSRequestManager manager];
-ACSURLHTTPRequester *requester = ACSCreateGETRequester([NSURL URLWithString:@"http://example.com/resources.json"], nil, NULL);
-requester.delegate = self;
+ACSURLHTTPRequester *requester = ACSCreateGETRequester([NSURL URLWithString:@"http://example.com/resources.json"], nil, self);
 [manager fetchDataFromRequester:requester];
 
-- (void)request:(id<ACSURLHTTPRequest>)requester didFailWithError:(NSError *)error {
+- (void)request:(id<ACSURLHTTPRequest>)requester didFailToRequestForDataWithError:(NSError *)error {
     NSLog(@"Error %@", error);
+}
+
+- (void)request:(id<ACSURLHTTPRequest>)requester didFailToProcessForDataWithError:(NSError *)error {
+    NSLog(@"Process Error %@", error);
 }
 
 - (void)request:(id<ACSURLHTTPRequest>)requester didReceiveData:(id)data {
@@ -116,12 +136,15 @@ ACSURLHTTPRequester *requester = ACSCreatePOSTRequester([NSURL URLWithString:@"h
 ```objective-c
 // Delegate
 ACSRequestManager *manager = [ACSRequestManager manager];
-ACSURLHTTPRequester *requester = ACSCreatePOSTRequester([NSURL URLWithString:@"http://example.com/resources.json"], nil, NULL);
-requester.delegate = self;
+ACSURLHTTPRequester *requester = ACSCreatePOSTRequester([NSURL URLWithString:@"http://example.com/resources.json"], nil, self);
 [manager fetchDataFromRequester:requester];
 
-- (void)request:(id<ACSURLHTTPRequest>)requester didFailWithError:(NSError *)error {
+- (void)request:(id<ACSURLHTTPRequest>)requester didFailToRequestForDataWithError:(NSError *)error {
     NSLog(@"Error %@", error);
+}
+
+- (void)request:(id<ACSURLHTTPRequest>)requester didFailToProcessForDataWithError:(NSError *)error {
+    NSLog(@"Process Error %@", error);
 }
 
 - (void)request:(id<ACSURLHTTPRequest>)requester didReceiveData:(id)data {
@@ -167,9 +190,8 @@ UIImage *image = [UIImage imageNamed:@"imageName"];
 NSDictionary *fileInfo = @{@"image": image};
 ACSFileUploader *requester = ACSCreateUploader([NSURL URLWithString:@"http://example.com/resources.json"],
                                                 fileInfo,
-                                                NULL);
+                                                self);
 requester.parameters = parameters;
-requester.delegate = self;
 [manager fetchDataFromRequester:requester];
 ......
 - (void)request:(id<ACSURLFileRequest>)requester didFileProgressing:(ACSRequestProgress)progress {
