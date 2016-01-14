@@ -28,17 +28,23 @@
 
 @implementation ACSURLHTTPRequester
 
-@synthesize URL = _URL;
-@synthesize path = _path;
-@synthesize method = _method;
-@synthesize delegate = _delegate;
-@synthesize operation = _operation;
-@synthesize responseType = _responseType;
+ACSSynthesizeSnippet(URL);
+ACSSynthesizeSnippet(tag);
+ACSSynthesizeSnippet(mark);
+ACSSynthesizeSnippet(path);
+ACSSynthesizeSnippet(method);
+ACSSynthesizeSnippet(delegate);
+ACSSynthesizeSnippet(operation);
+ACSSynthesizeSnippet(responseType);
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"<%@: %p, \ntag: %@,\nURL: %@, \nmark: %@, \npath: %@, \nmethod: %@,\nparameters: %@, \ncacheResponseData: %@>", NSStringFromClass([self class]), self, @(self.tag), self.URL, self.mark, self.path, ACSHTTPMethod(self.method), self.parameters, self.cacheResponseData ? @"YES" : @"NO"];
+}
 
 #ifdef _AFNETWORKING_
 
-@synthesize parameters = _parameters;
-@synthesize operationManager = _operationManager;
+ACSSynthesizeSnippet(parameters);
+ACSSynthesizeSnippet(operationManager);
 
 - (void)URLOperationFormManager:(AFHTTPRequestOperationManager *)operationManager
                 cacheExpiration:(NSTimeInterval)timeInterval

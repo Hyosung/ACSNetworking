@@ -28,6 +28,11 @@
 
 @property (nonatomic, copy) NSDictionary *fileInfo;
 
+/**
+ 图片压缩质量 0-1 默认0.5
+ */
+@property (nonatomic, assign) CGFloat compressionQuality;
+
 @end
 
 /**

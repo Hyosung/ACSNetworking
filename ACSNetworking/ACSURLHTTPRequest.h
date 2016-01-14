@@ -27,10 +27,13 @@
 
 @protocol ACSURLHTTPRequest <NSObject>
 
+@property (nonatomic) NSInteger tag;
+@property (nonatomic, copy) NSString *mark;
+
 /**
  响应的结果的类型 默认data
  */
-@property ACSResponseType responseType;
+@property (nonatomic) ACSResponseType responseType;
 
 /**
  请求的URL
@@ -45,7 +48,7 @@
 /**
  请求方式
  */
-@property ACSRequestMethod method;
+@property (nonatomic) ACSRequestMethod method;
 
 @property (nonatomic, weak) id <ACSURLRequesterDelegate> delegate;
 

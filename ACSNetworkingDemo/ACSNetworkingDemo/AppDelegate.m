@@ -22,7 +22,6 @@
 //    [ACSNetworkConfiguration defaultConfiguration].securityPolicy = [AFSecurityPolicy defaultPolicy];
 //    [ACSNetworkConfiguration defaultConfiguration].requestSerializer = [AFHTTPRequestSerializer serializer];
 //    [ACSNetworkConfiguration defaultConfiguration].responseSerializer = [AFHTTPResponseSerializer serializer];
-    
     return YES;
 }
 

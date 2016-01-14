@@ -28,6 +28,7 @@
 }
 
 - (IBAction)beginDownloadFile:(UIButton *)sender {
+    
     if ([self.fileDownloader isExecuting]) {
         
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"下载中" message:nil delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil];

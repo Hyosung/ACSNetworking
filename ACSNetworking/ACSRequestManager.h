@@ -44,6 +44,7 @@ ACSNETWORK_EXTERN NSString *const ACSNetworkingErrorDescriptionKey;
  单例
  */
 + (instancetype)sharedManager;
+
 + (instancetype)manager;
 - (instancetype)initWithConfiguration:(ACSNetworkConfiguration *) configuration;
 

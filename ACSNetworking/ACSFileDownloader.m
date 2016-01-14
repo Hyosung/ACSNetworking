@@ -250,13 +250,15 @@
 
 @implementation ACSFileDownloader
 
-@synthesize URL = _URL;
-@synthesize path = _path;
-@synthesize method = _method;
-@synthesize delegate = _delegate;
-@synthesize parameters = _parameters;
-@synthesize responseType = _responseType;
-@synthesize progressBlock = _progressBlock;
+ACSSynthesizeSnippet(URL);
+ACSSynthesizeSnippet(tag);
+ACSSynthesizeSnippet(mark);
+ACSSynthesizeSnippet(path);
+ACSSynthesizeSnippet(method);
+ACSSynthesizeSnippet(delegate);
+ACSSynthesizeSnippet(parameters);
+ACSSynthesizeSnippet(responseType);
+ACSSynthesizeSnippet(progressBlock);
 
 - (instancetype)init {
     return [self initWithShouldResume:YES];
@@ -268,6 +270,10 @@
         _shouldResume = shouldResume;
     }
     return self;
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"<%@: %p, \ntag: %@,\nURL: %@, \nmark: %@, \npath: %@, \nmethod: %@,\nparameters: %@>", NSStringFromClass([self class]), self, @(self.tag), self.URL, self.mark, self.path, ACSHTTPMethod(self.method), self.parameters];
 }
 
 #ifdef _AFNETWORKING_

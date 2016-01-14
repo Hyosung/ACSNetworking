@@ -88,6 +88,10 @@
     return (timeInterval > cacheTimeInterval);
 }
 
+- (NSString *)description {
+    return [NSString stringWithFormat:@"<%@: %p, content: %@, modificationDate:%@>", NSStringFromClass([self class]), self, self.content, self.modificationDate];
+}
+
 @end
 
 @interface AutoCleanCache : NSCache

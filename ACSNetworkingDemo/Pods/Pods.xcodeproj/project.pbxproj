@@ -68,6 +68,8 @@
 		D15AB62D70348D52558AE4E8FDAA7923 /* ACSNetworkReachabilityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3BFF36E6BA1F24FB9B56C1A33AF595A3 /* ACSNetworkReachabilityManager.m */; };
 		D1F2E579B8472FD4F88D8C8F9E956D01 /* AFSecurityPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = C9BEDC423D7B4118A02F52632869D795 /* AFSecurityPolicy.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D7BA518ACE1FCAD5FE68F6605A2ED615 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96A1E36225FC0A351AFA607880E529D1 /* CoreTelephony.framework */; };
+		DDFF9AA81C47A3CA003C5D03 /* NSData+ACSMimeType.h in Headers */ = {isa = PBXBuildFile; fileRef = DDFF9AA61C47A3CA003C5D03 /* NSData+ACSMimeType.h */; };
+		DDFF9AA91C47A3CA003C5D03 /* NSData+ACSMimeType.m in Sources */ = {isa = PBXBuildFile; fileRef = DDFF9AA71C47A3CA003C5D03 /* NSData+ACSMimeType.m */; };
 		E220B442AC4BAED4D5881712E060B50A /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 485CF653286B35E0385E16AA7693DC86 /* UIImageView+AFNetworking.m */; };
 		E725F67D63E6CC02427EC2F65562F0BE /* AFURLConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 00A5D088DD923A013A0A86D91B2C53E1 /* AFURLConnectionOperation.m */; };
 		E8131C36BF2521E3671171049CF12E83 /* AFHTTPRequestOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = E2A69D25D91C8DFE0C29109D7CA495F3 /* AFHTTPRequestOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -173,6 +175,8 @@
 		C839414457BCAA78994414BC3C986E63 /* Pods-ACSNetworkingDemo-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-ACSNetworkingDemo-frameworks.sh"; sourceTree = "<group>"; };
 		C9BEDC423D7B4118A02F52632869D795 /* AFSecurityPolicy.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFSecurityPolicy.h; path = AFNetworking/AFSecurityPolicy.h; sourceTree = "<group>"; };
 		D0A2B073CE3F2DFBB4A92C72C9D4C50A /* ACSNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ACSNetworking.h; sourceTree = "<group>"; };
+		DDFF9AA61C47A3CA003C5D03 /* NSData+ACSMimeType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+ACSMimeType.h"; sourceTree = "<group>"; };
+		DDFF9AA71C47A3CA003C5D03 /* NSData+ACSMimeType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+ACSMimeType.m"; sourceTree = "<group>"; };
 		DFBB54E6BA345DAA621C130FDEA47A7E /* Pods-ACSNetworkingDemo-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-ACSNetworkingDemo-acknowledgements.markdown"; sourceTree = "<group>"; };
 		E2A69D25D91C8DFE0C29109D7CA495F3 /* AFHTTPRequestOperation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFHTTPRequestOperation.h; path = AFNetworking/AFHTTPRequestOperation.h; sourceTree = "<group>"; };
 		EB1F9CDE037074E63EDEF51DF34208A3 /* ACSNetworking.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ACSNetworking.xcconfig; sourceTree = "<group>"; };
@@ -349,6 +353,8 @@
 				B2E9E4CE713B1E46F29DDC7BA145BF7B /* ACSURLHTTPRequester.h */,
 				5F1CF73011F8F1EDC9D203FB2F272F37 /* ACSURLHTTPRequester.m */,
 				5B50822BB0A844FC4F8827BAEBB7AF72 /* ACSURLRequesterDelegate.h */,
+				DDFF9AA61C47A3CA003C5D03 /* NSData+ACSMimeType.h */,
+				DDFF9AA71C47A3CA003C5D03 /* NSData+ACSMimeType.m */,
 			);
 			path = ACSNetworking;
 			sourceTree = "<group>";
@@ -494,6 +500,7 @@
 				1BE45E7F0817C05472A999E72C518AED /* ACSFileDownloader.h in Headers */,
 				4348DF39787358F68D6938E39FF8EA91 /* ACSFileUploader.h in Headers */,
 				98CAB5B9FD458139FA06D24DC43B88F2 /* ACSNetworkConfiguration.h in Headers */,
+				DDFF9AA81C47A3CA003C5D03 /* NSData+ACSMimeType.h in Headers */,
 				158E4BC15BE0640FC1A86C6157AB6739 /* ACSNetworking.h in Headers */,
 				81BDEC92C0AA6993D570F585C7444E8D /* ACSNetworkPrivate.h in Headers */,
 				4FF75B1DA8A071C5186B8F1AC91269AC /* ACSNetworkReachabilityManager.h in Headers */,
@@ -568,7 +575,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0700;
-				LastUpgradeCheck = 0710;
+				LastUpgradeCheck = 0700;
 			};
 			buildConfigurationList = 2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -620,6 +627,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8A3FE4615F0D38298D6BD505021A522A /* ACSCache.m in Sources */,
+				DDFF9AA91C47A3CA003C5D03 /* NSData+ACSMimeType.m in Sources */,
 				407FAA191FE60B2A3C6D07C1F7FB6680 /* ACSFileDownloader.m in Sources */,
 				6F946C2D3841D586E784F05431A9AC04 /* ACSFileUploader.m in Sources */,
 				38FFC075122F642E43FC197B1624F060 /* ACSNetworkConfiguration.m in Sources */,
@@ -767,7 +775,6 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;

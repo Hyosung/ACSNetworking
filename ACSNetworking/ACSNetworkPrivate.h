@@ -49,6 +49,7 @@
 #define __ACSNonnull
 #endif
 
+#define ACSSynthesizeSnippet(propertyName) @synthesize propertyName = _##propertyName
 
 typedef NS_ENUM(NSUInteger, ACSResponseType) {
     //未经过处理的数据

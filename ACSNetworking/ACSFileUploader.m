@@ -30,15 +30,35 @@
 #import <AppKit/AppKit.h>
 #endif
 
+#import <CommonCrypto/CommonDigest.h>
+#import "NSData+ACSMimeType.h"
+
 @implementation ACSFileUploader
 
-@synthesize URL = _URL;
-@synthesize path = _path;
-@synthesize method = _method;
-@synthesize delegate = _delegate;
-@synthesize parameters = _parameters;
-@synthesize responseType = _responseType;
-@synthesize progressBlock = _progressBlock;
+ACSSynthesizeSnippet(URL);
+ACSSynthesizeSnippet(tag);
+ACSSynthesizeSnippet(mark);
+ACSSynthesizeSnippet(path);
+ACSSynthesizeSnippet(method);
+ACSSynthesizeSnippet(delegate);
+ACSSynthesizeSnippet(parameters);
+ACSSynthesizeSnippet(responseType);
+ACSSynthesizeSnippet(progressBlock);
+
+ACSNETWORK_STATIC_INLINE NSString * acs_md5(NSString *text) {
+    const char *str = [text UTF8String];
+    unsigned char r[CC_MD5_DIGEST_LENGTH];
+    CC_MD5(str, (CC_LONG)strlen(str), r);
+    NSMutableString *md5Ciphertext = [NSMutableString stringWithString:@""];
+    for (int i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
+        [md5Ciphertext appendFormat:@"%02x",r[i]];
+    }
+    return [md5Ciphertext copy];
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"<%@: %p, \ntag: %@,\nURL: %@, \nmark: %@, \npath: %@, \nmethod: %@,\nfileInfo: %@,\nparameters: %@>", NSStringFromClass([self class]), self, @(self.tag), self.URL, self.mark, self.path, ACSHTTPMethod(self.method), self.fileInfo, self.parameters];
+}
 
 #ifdef _AFNETWORKING_
 
@@ -63,20 +83,24 @@
                                                                                  id fileValue = self.fileInfo[keyName];
                                                                                  if ([fileValue isKindOfClass:[NSString class]]) {
                                                                                      
-                                                                                     [formData appendPartWithFileURL:[NSURL URLWithString:fileValue]
+                                                                                     [formData appendPartWithFileURL:[NSURL fileURLWithPath:fileValue]
                                                                                                                 name:keyName
                                                                                                                error:nil];
                                                                                  }
                                                                                  else if ([fileValue isKindOfClass:[NSData class]]) {
-                                                                                     [formData appendPartWithFormData:fileValue name:keyName];
+                                                                                     NSDictionary *mimeTypeData = [fileValue mimeTypeData];
+                                                                                     NSString *mimeType = mimeTypeData[ACSDataMimeTypeKey];
+                                                                                     NSString *extension = mimeTypeData[ACSDataExtensionKey];
+                                                                                     NSString *fileName = [acs_md5([NSString stringWithFormat:@"%@", @(arc4random())]) stringByAppendingPathExtension:extension];
+                                                                                     [formData appendPartWithFileData:fileValue name:keyName fileName:fileName mimeType:mimeType];
                                                                                  }
                                                                                  #if __IPHONE_OS_VERSION_MIN_REQUIRED
                                                                                  else if ([fileValue isKindOfClass:[UIImage class]]) {
-                                                                                     [formData appendPartWithFormData:UIImageJPEGRepresentation(fileValue, 1.0) name:keyName];
+                                                                                     [formData appendPartWithFormData:UIImageJPEGRepresentation(fileValue, self.compressionQuality) name:keyName];
                                                                                  }
                                                                                  #else
                                                                                  else if ([fileValue isKindOfClass:[NSImage class]]) {
-                                                                                     [formData appendPartWithFormData:[fileValue TIFFRepresentationUsingCompression:NSTIFFCompressionNone factor:1.0] name:keyName];
+                                                                                     [formData appendPartWithFormData:[fileValue TIFFRepresentationUsingCompression:NSTIFFCompressionNone factor:self.compressionQuality] name:keyName];
                                                                                  }
                                                                                  #endif
                                                                                  else if ([fileValue isKindOfClass:[NSURL class]]) {
@@ -163,6 +187,13 @@
         _method = ACSRequestMethodPOST;
     }
     return _method;
+}
+
+- (CGFloat)compressionQuality {
+    if (_compressionQuality <= 0) {
+        return 0.5;
+    }
+    return _compressionQuality;
 }
 
 @end

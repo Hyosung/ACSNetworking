@@ -190,6 +190,15 @@ ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromContentType(NSString *conten
     return [self initWithConfiguration:nil];
 }
 
+- (NSString *)description {
+#ifdef _AFNETWORKING_
+    return [NSString stringWithFormat:@"<%@: %p, manager: %@>", NSStringFromClass([self class]), self, self.manager];
+#else
+    return [super description];
+#endif
+}
+
+
 #pragma mark - Request Operation
 
 - (void)cancelAllOperations {
