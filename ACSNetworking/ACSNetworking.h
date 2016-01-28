@@ -31,7 +31,6 @@
  AppDelegate.m -> application:didFinishLaunchingWithOptions:
  [ACSNetworkConfiguration defaultConfiguration].baseURL = [NSURL URLWithString:@"http://example.com"];
  [ACSNetworkConfiguration defaultConfiguration].downloadExpirationTimeInterval = 60.0 * 60.0 * 24.0; //One day
- [ACSNetworkConfiguration defaultConfiguration].timeoutInterval = 60.0; //One minute
  [ACSNetworkConfiguration defaultConfiguration].cacheExpirationTimeInterval = 60.0 * 2; //Two minutes
  
  /------------------------/
@@ -83,7 +82,7 @@
 
 #import "ACSCache.h"
 #import "ACSNetworkConfiguration.h"
-#import "ACSNetworkReachabilityManager.h"
+#import "ACSReachability.h"
 
 #import "ACSFileUploader.h"
 #import "ACSFileDownloader.h"

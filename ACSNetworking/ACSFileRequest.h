@@ -1,4 +1,4 @@
-// ACSURLFileRequest.h
+// ACSFileRequest.h
 // ACSNetworking
 //
 // Created by Stoney on 8/4/15.
@@ -22,9 +22,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "ACSURLHTTPRequest.h"
+#import "ACSHTTPRequest.h"
 
-@protocol ACSURLFileRequest <ACSURLHTTPRequest>
+@interface ACSFileRequest : ACSHTTPRequest
 
 @property (nonatomic, copy) ACSRequestProgressHandler progressBlock;
 

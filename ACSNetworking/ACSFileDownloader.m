@@ -24,8 +24,6 @@
 
 #import "ACSFileDownloader.h"
 
-#import "ACSCache.h"
-#import "ACSRequestManager.h"
 #import <fcntl.h>
 #import <unistd.h>
 
@@ -250,16 +248,6 @@
 
 @implementation ACSFileDownloader
 
-ACSSynthesizeSnippet(URL);
-ACSSynthesizeSnippet(tag);
-ACSSynthesizeSnippet(mark);
-ACSSynthesizeSnippet(path);
-ACSSynthesizeSnippet(method);
-ACSSynthesizeSnippet(delegate);
-ACSSynthesizeSnippet(parameters);
-ACSSynthesizeSnippet(responseType);
-ACSSynthesizeSnippet(progressBlock);
-
 - (instancetype)init {
     return [self initWithShouldResume:YES];
 }
@@ -278,49 +266,17 @@ ACSSynthesizeSnippet(progressBlock);
 
 #ifdef _AFNETWORKING_
 
-@synthesize operation = _operation;
-@synthesize operationManager = _operationManager;
+ACSSynthesizeSnippet(operation);
+ACSSynthesizeSnippet(operationManager);
 
 - (void)URLOperationFormManager:(AFHTTPRequestOperationManager *)operationManager
-             downloadExpiration:(NSTimeInterval)timeInterval
                         success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
                         failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure {
     _operationManager = operationManager;
-    self.URL = self.URL ?: [NSURL URLWithString:self.path ?: @""
-                                  relativeToURL:operationManager.baseURL];
-    NSURLRequest *URLRequest = [[operationManager.requestSerializer requestWithMethod:@"GET"
-                                                                            URLString:self.URL.absoluteString
-                                                                           parameters:self.parameters
-                                                                                error:nil] copy];
-    
-    NSString *filePath = [[ACSCache sharedCache] fetchAbsolutePathforURL:self.URL];
-    NSData *fileData = ACSFileDataFromPath(filePath, timeInterval);
-    if (fileData) {
-        id resultData = nil;
-        if (self.responseType == ACSResponseTypeFilePath) {
-            resultData = filePath;
-        }
-        else if (self.responseType == ACSResponseTypeImage) {
-#if TARGET_OS_IPHONE
-            resultData = [UIImage imageWithData:fileData];
-#else
-            resultData = [[NSImage alloc] initWithData:fileData];
-#endif
-        }
-        else if (self.responseType == ACSResponseTypeData) {
-            resultData = fileData;
-        }
-        if (self.progressBlock) {
-            self.progressBlock(ACSRequestProgressZero, resultData, nil);
-        }
-        
-        if (self.delegate) {
-            if ([self.delegate respondsToSelector:@selector(request:didReceiveData:)]) {
-                [self.delegate request:self didReceiveData:resultData];
-            }
-        }
-        return;
-    }
+    NSURLRequest *URLRequest = [[[self requestSerializer] requestWithMethod:@"GET"
+                                                                  URLString:self.URL.absoluteString
+                                                                 parameters:self.parameters
+                                                                      error:nil] copy];
     
     ACSDownloadRequestOperation *operation = [[ACSDownloadRequestOperation alloc] initWithRequest:URLRequest
                                                                                      shouldResume:self.shouldResume];
@@ -368,44 +324,6 @@ ACSSynthesizeSnippet(progressBlock);
     
     _operation = operation;
     [operationManager.operationQueue addOperation:operation];
-}
-
-- (void)cancel {
-    if (!self.operation) {
-        return;
-    }
-    
-    [self.operation cancel];
-}
-
-- (BOOL)pause {
-
-    if (!self.operation ||
-        [self.operation isPaused]) {
-        return NO;
-    }
-    
-    [self.operation pause];
-    return YES;
-}
-
-- (BOOL)resume {
-    if (!self.operation ||
-        ![self.operation isPaused]) {
-        return NO;
-    }
-    
-    [self.operation resume];
-    return YES;
-}
-
-- (BOOL)isPaused {
-    
-    return [self.operation isPaused];
-}
-
-- (BOOL)isExecuting {
-    return [self.operation isExecuting];
 }
 
 #endif

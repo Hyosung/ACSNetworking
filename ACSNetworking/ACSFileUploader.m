@@ -30,31 +30,11 @@
 #import <AppKit/AppKit.h>
 #endif
 
-#import <CommonCrypto/CommonDigest.h>
 #import "NSData+ACSMimeType.h"
 
 @implementation ACSFileUploader
 
-ACSSynthesizeSnippet(URL);
-ACSSynthesizeSnippet(tag);
-ACSSynthesizeSnippet(mark);
-ACSSynthesizeSnippet(path);
 ACSSynthesizeSnippet(method);
-ACSSynthesizeSnippet(delegate);
-ACSSynthesizeSnippet(parameters);
-ACSSynthesizeSnippet(responseType);
-ACSSynthesizeSnippet(progressBlock);
-
-ACSNETWORK_STATIC_INLINE NSString * acs_md5(NSString *text) {
-    const char *str = [text UTF8String];
-    unsigned char r[CC_MD5_DIGEST_LENGTH];
-    CC_MD5(str, (CC_LONG)strlen(str), r);
-    NSMutableString *md5Ciphertext = [NSMutableString stringWithString:@""];
-    for (int i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
-        [md5Ciphertext appendFormat:@"%02x",r[i]];
-    }
-    return [md5Ciphertext copy];
-}
 
 - (NSString *)description {
     return [NSString stringWithFormat:@"<%@: %p, \ntag: %@,\nURL: %@, \nmark: %@, \npath: %@, \nmethod: %@,\nfileInfo: %@,\nparameters: %@>", NSStringFromClass([self class]), self, @(self.tag), self.URL, self.mark, self.path, ACSHTTPMethod(self.method), self.fileInfo, self.parameters];
@@ -62,52 +42,50 @@ ACSNETWORK_STATIC_INLINE NSString * acs_md5(NSString *text) {
 
 #ifdef _AFNETWORKING_
 
-@synthesize operation = _operation;
-@synthesize operationManager = _operationManager;
+ACSSynthesizeSnippet(operation);
+ACSSynthesizeSnippet(operationManager);
 
 - (void)URLOperationFormManager:(AFHTTPRequestOperationManager *)operationManager
                         success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
                         failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure {
     
     _operationManager = operationManager;
-    self.URL = self.URL ?: [NSURL URLWithString:self.path ?: @""
-                                  relativeToURL:operationManager.baseURL];
     __weak __typeof__(self) weakSelf = self;
-    NSURLRequest *URLRequest = [[operationManager.requestSerializer multipartFormRequestWithMethod:@"POST"
-                                                                                         URLString:self.URL.absoluteString
-                                                                                        parameters:self.parameters
-                                                                         constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-                                                                             __strong __typeof__(weakSelf) self = weakSelf;
-                                                                             NSArray *allKeys = self.fileInfo.allKeys;
-                                                                             for (NSString *keyName in allKeys) {
-                                                                                 id fileValue = self.fileInfo[keyName];
-                                                                                 if ([fileValue isKindOfClass:[NSString class]]) {
-                                                                                     
-                                                                                     [formData appendPartWithFileURL:[NSURL fileURLWithPath:fileValue]
-                                                                                                                name:keyName
-                                                                                                               error:nil];
-                                                                                 }
-                                                                                 else if ([fileValue isKindOfClass:[NSData class]]) {
-                                                                                     NSDictionary *mimeTypeData = [fileValue mimeTypeData];
-                                                                                     NSString *mimeType = mimeTypeData[ACSDataMimeTypeKey];
-                                                                                     NSString *extension = mimeTypeData[ACSDataExtensionKey];
-                                                                                     NSString *fileName = [acs_md5([NSString stringWithFormat:@"%@", @(arc4random())]) stringByAppendingPathExtension:extension];
-                                                                                     [formData appendPartWithFileData:fileValue name:keyName fileName:fileName mimeType:mimeType];
-                                                                                 }
-                                                                                 #if __IPHONE_OS_VERSION_MIN_REQUIRED
-                                                                                 else if ([fileValue isKindOfClass:[UIImage class]]) {
-                                                                                     [formData appendPartWithFormData:UIImageJPEGRepresentation(fileValue, self.compressionQuality) name:keyName];
-                                                                                 }
-                                                                                 #else
-                                                                                 else if ([fileValue isKindOfClass:[NSImage class]]) {
-                                                                                     [formData appendPartWithFormData:[fileValue TIFFRepresentationUsingCompression:NSTIFFCompressionNone factor:self.compressionQuality] name:keyName];
-                                                                                 }
-                                                                                 #endif
-                                                                                 else if ([fileValue isKindOfClass:[NSURL class]]) {
-                                                                                     [formData appendPartWithFileURL:fileValue name:keyName error:nil];
-                                                                                 }
-                                                                             }
-                                                                         } error:nil] copy];
+    NSURLRequest *URLRequest = [[[self requestSerializer] multipartFormRequestWithMethod:@"POST"
+                                                                               URLString:self.URL.absoluteString
+                                                                              parameters:self.parameters
+                                                               constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+                                                                   __strong __typeof__(weakSelf) self = weakSelf;
+                                                                   NSArray *allKeys = self.fileInfo.allKeys;
+                                                                   for (NSString *keyName in allKeys) {
+                                                                       id fileValue = self.fileInfo[keyName];
+                                                                       if ([fileValue isKindOfClass:[NSString class]]) {
+                                                                           
+                                                                           [formData appendPartWithFileURL:[NSURL fileURLWithPath:fileValue]
+                                                                                                      name:keyName
+                                                                                                     error:nil];
+                                                                       }
+                                                                       else if ([fileValue isKindOfClass:[NSData class]]) {
+                                                                           NSDictionary *mimeTypeData = [fileValue mimeTypeData];
+                                                                           NSString *mimeType = mimeTypeData[ACSDataMimeTypeKey];
+                                                                           NSString *extension = mimeTypeData[ACSDataExtensionKey];
+                                                                           NSString *fileName = [ACSMD5([NSString stringWithFormat:@"%@", @(arc4random())]) stringByAppendingPathExtension:extension];
+                                                                           [formData appendPartWithFileData:fileValue name:keyName fileName:fileName mimeType:mimeType];
+                                                                       }
+                                                                       #if __IPHONE_OS_VERSION_MIN_REQUIRED
+                                                                       else if ([fileValue isKindOfClass:[UIImage class]]) {
+                                                                           [formData appendPartWithFormData:UIImageJPEGRepresentation(fileValue, self.compressionQuality) name:keyName];
+                                                                       }
+                                                                       #else
+                                                                       else if ([fileValue isKindOfClass:[NSImage class]]) {
+                                                                           [formData appendPartWithFormData:[fileValue TIFFRepresentationUsingCompression:NSTIFFCompressionNone factor:self.compressionQuality] name:keyName];
+                                                                       }
+                                                                       #endif
+                                                                       else if ([fileValue isKindOfClass:[NSURL class]]) {
+                                                                           [formData appendPartWithFileURL:fileValue name:keyName error:nil];
+                                                                       }
+                                                                   }
+                                                               } error:nil] copy];
     
     AFHTTPRequestOperation *operation = [operationManager HTTPRequestOperationWithRequest:URLRequest
                                                                                   success:success
@@ -142,44 +120,6 @@ ACSNETWORK_STATIC_INLINE NSString * acs_md5(NSString *text) {
     [operationManager.operationQueue addOperation:operation];
 }
 
-- (void)cancel {
-    if (!self.operation) {
-        return;
-    }
-    
-    [self.operation cancel];
-}
-
-- (BOOL)pause {
-    
-    if (!self.operation ||
-        [self.operation isPaused]) {
-        return NO;
-    }
-    
-    [self.operation pause];
-    return YES;
-}
-
-- (BOOL)resume {
-    if (!self.operation ||
-        ![self.operation isPaused]) {
-        return NO;
-    }
-    
-    [self.operation resume];
-    return YES;
-}
-
-- (BOOL)isPaused {
-    
-    return [self.operation isPaused];
-}
-
-- (BOOL)isExecuting {
-    return [self.operation isExecuting];
-}
-
 #endif
 
 - (ACSRequestMethod)method {
@@ -190,7 +130,7 @@ ACSNETWORK_STATIC_INLINE NSString * acs_md5(NSString *text) {
 }
 
 - (CGFloat)compressionQuality {
-    if (_compressionQuality <= 0) {
+    if (_compressionQuality <= 0.0) {
         return 0.5;
     }
     return _compressionQuality;

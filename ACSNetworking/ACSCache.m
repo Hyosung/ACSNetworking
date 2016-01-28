@@ -28,7 +28,6 @@
 #import <UIKit/UIApplication.h>
 #endif
 #import "ACSNetworkPrivate.h"
-#import <CommonCrypto/CommonDigest.h>
 
 @interface ACSCachedObject : NSObject <NSCoding>
 
@@ -137,17 +136,7 @@
 @implementation ACSCache
 
 ACSNETWORK_STATIC_INLINE NSString * ACSCacheKeyForURL(NSURL *URL) {
-    const char *str = [URL.absoluteString UTF8String];
-    if (str == NULL) {
-        str = "";
-    }
-    unsigned char r[CC_MD5_DIGEST_LENGTH];
-    CC_MD5(str, (CC_LONG)strlen(str), r);
-    NSMutableString *md5Ciphertext = [NSMutableString stringWithString:@""];
-    for (int i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
-        [md5Ciphertext appendFormat:@"%02x",r[i]];
-    }
-    return [md5Ciphertext copy];
+    return ACSMD5(URL.absoluteString);
 }
 
 ACSNETWORK_STATIC_INLINE NSString * ACSDiskCacheFilePath(NSString *pathComponent, NSString *diskFolder) {

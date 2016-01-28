@@ -30,7 +30,8 @@
 @class ACSNetworkConfiguration;
 
 typedef NS_ENUM(NSUInteger, ACSNetworkingErrorCode) {
-    ACSNetworkingErrorCodeEmptyData = 0
+    ACSNetworkingErrorCodeEmptyData = 0 ,
+    ACSNetworkingErrorCodeNoNetwork
 };
 
 ACSNETWORK_EXTERN NSString *const ACSNetworkingErrorDomain;
@@ -74,55 +75,3 @@ ACSNETWORK_EXTERN NSString *const ACSNetworkingErrorDescriptionKey;
 #endif
 
 @end
-
-#pragma mark - 旧写法
-
-@interface ACSRequestManager (ACSRequestManagerBlockOld)
-
-#ifdef _AFNETWORKING_
-
-#pragma mark - 默认的baseURL
-
-- (ACSURLHTTPRequester *)fetchDataFromPath:(NSString *) path
-                                    method:(ACSRequestMethod) method
-                                parameters:(NSDictionary *) parameters
-                                completion:(ACSRequestCompletionHandler) completionBlock;
-
-- (ACSURLHTTPRequester *)GET_fetchDataFromPath:(NSString *) path
-                                    parameters:(NSDictionary *) parameters
-                                    completion:(ACSRequestCompletionHandler) completionBlock;
-
-- (ACSURLHTTPRequester *)POST_fetchDataFromPath:(NSString *) path
-                                     parameters:(NSDictionary *) parameters
-                                     completion:(ACSRequestCompletionHandler) completionBlock;
-
-- (ACSFileUploader *)uploadFileFromPath:(NSString *) path
-                               fileInfo:(NSDictionary *) fileInfo
-                             parameters:(NSDictionary *) parameters
-                               progress:(ACSRequestProgressHandler) progressBlock;
-
-- (ACSFileDownloader *)downloadFileFromPath:(NSString *) path
-                                   progress:(ACSRequestProgressHandler) progressBlock;
-
-#pragma mark - 自定义请求链接
-
-- (ACSURLHTTPRequester *)fetchDataFromURLString:(NSString *) URLString
-                                         method:(ACSRequestMethod) method
-                                     parameters:(NSDictionary *) parameters
-                                     completion:(ACSRequestCompletionHandler) completionBlock;
-
-- (ACSFileUploader *)uploadFileFromURLString:(NSString *) URLString
-                                    fileInfo:(NSDictionary *) fileInfo
-                                  parameters:(NSDictionary *) parameters
-                                    progress:(ACSRequestProgressHandler) progressBlock;
-
-- (ACSFileDownloader *)downloadFileFromURLString:(NSString *) URLString
-                                        progress:(ACSRequestProgressHandler) progressBlock;
-
-#endif
-
-@end
-
-ACSNETWORK_EXTERN NSData * ACSFileDataFromPath(NSString *path, NSTimeInterval downloadExpirationTimeInterval);
-ACSNETWORK_EXTERN NSString * ACSFilePathFromURL(NSURL *URL, NSString *folderPath, NSString *extension);
-ACSNETWORK_EXTERN unsigned long long ACSFileSizeFromPath(NSString *path);

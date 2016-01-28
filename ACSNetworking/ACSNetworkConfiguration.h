@@ -26,20 +26,13 @@
 
 @interface ACSNetworkConfiguration : NSObject
 
+/**
+ 单例
+ */
 + (instancetype)defaultConfiguration;
 + (instancetype)configuration;
 
 @property (nonatomic, strong) NSURL *baseURL;
-
-/**
- 默认 [AFHTTPRequestSerializer serializer]
- */
-@property (nonatomic, strong) AFHTTPRequestSerializer <AFURLRequestSerialization> * requestSerializer;
-
-/**
- 默认 [AFHTTPResponseSerializer serializer]
- */
-@property (nonatomic, strong) AFHTTPResponseSerializer <AFURLResponseSerialization> * responseSerializer;
 
 /**
  默认 [AFSecurityPolicy defaultPolicy]
@@ -55,11 +48,6 @@
  下载文件的过期时间 默认一周 (60.0 * 60.0 * 24.0 * 7)s
  */
 @property (nonatomic) NSTimeInterval downloadExpirationTimeInterval;
-
-/**
- 请求超时时间 默认 30.0s
- */
-@property (nonatomic) NSTimeInterval timeoutInterval NS_DEPRECATED(10_2, 10_11, 2_0, 9_0, "请使用requestSerializer.timeoutInterval");
 
 /**
  缓存过期时间 默认 180.0s(3min)

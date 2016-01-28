@@ -22,16 +22,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "ACSURLFileRequest.h"
+#import "ACSFileRequest.h"
 
-@interface ACSFileUploader : NSObject <ACSURLFileRequest>
+@interface ACSFileUploader : ACSFileRequest
 
 @property (nonatomic, copy) NSDictionary *fileInfo;
 
 /**
  图片压缩质量 0-1 默认0.5
  */
-@property (nonatomic, assign) CGFloat compressionQuality;
+@property (nonatomic) CGFloat compressionQuality;
 
 @end
 

@@ -1,4 +1,4 @@
-// ACSURLHTTPRequest.h
+// ACSHTTPRequest.h
 // ACSNetworking
 //
 // Created by Stoney on 8/4/15.
@@ -23,9 +23,36 @@
 // THE SOFTWARE.
 
 #import "ACSNetworkPrivate.h"
-#import "ACSURLRequesterDelegate.h"
 
-@protocol ACSURLHTTPRequest <NSObject>
+@class ACSHTTPRequest;
+
+@protocol ACSURLRequesterDelegate <NSObject>
+
+@optional
+
+/**
+ 请求成功后，接收到的数据
+ */
+- (void)request:(ACSHTTPRequest *) requester didReceiveData:(id) data;
+
+/**
+ 文件上传、下载过程
+ */
+- (void)request:(ACSHTTPRequest *) requester didFileProgressing:(ACSRequestProgress) progress;
+
+/**
+ （请求已完成）处理数据时，产生的错误
+ */
+- (void)request:(ACSHTTPRequest *) requester didFailToProcessForDataWithError:(NSError *) error;
+
+/**
+ （请求未开始或进行中）请求数据时，产生的错误
+ */
+- (void)request:(ACSHTTPRequest *) requester didFailToRequestForDataWithError:(NSError *) error;
+
+@end
+
+@interface ACSHTTPRequest : NSObject
 
 @property (nonatomic) NSInteger tag;
 @property (nonatomic, copy) NSString *mark;
@@ -34,6 +61,11 @@
  响应的结果的类型 默认data
  */
 @property (nonatomic) ACSResponseType responseType;
+
+/**
+ 请求的类型
+ */
+@property (nonatomic) ACSRequestType requestType;
 
 /**
  请求的URL
@@ -96,6 +128,8 @@
  调用完请求方法后，方可使用
  */
 @property (nonatomic, weak, readonly) AFHTTPRequestOperationManager *operationManager;
+
+- (AFHTTPRequestSerializer <AFURLRequestSerialization> *)requestSerializer;
 
 #endif
 

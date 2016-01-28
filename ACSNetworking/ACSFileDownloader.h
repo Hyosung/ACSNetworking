@@ -22,9 +22,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "ACSURLFileRequest.h"
+#import "ACSFileRequest.h"
 
-@interface ACSFileDownloader : NSObject <ACSURLFileRequest>
+@interface ACSFileDownloader : ACSFileRequest
 
 /**
  A Boolean value that indicates if we should try to resume the download. Defaults is `YES`.

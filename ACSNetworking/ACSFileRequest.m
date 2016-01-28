@@ -1,4 +1,4 @@
-// ACSURLRequesterDelegate.h
+// ACSFileRequest.m
 // ACSNetworking
 //
 // Created by Stoney on 8/4/15.
@@ -22,33 +22,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
+#import "ACSFileRequest.h"
 
-@protocol ACSURLHTTPRequest;
-@protocol ACSURLFileRequest;
-
-@protocol ACSURLRequesterDelegate <NSObject>
-
-@optional
-
-/**
- 请求成功后，接收到的数据
- */
-- (void)request:(id <ACSURLHTTPRequest>) requester didReceiveData:(id) data;
-
-/**
- 文件上传、下载过程
- */
-- (void)request:(id <ACSURLFileRequest>) requester didFileProgressing:(ACSRequestProgress) progress;
-
-/**
- （请求已完成）处理数据时，产生的错误
- */
-- (void)request:(id <ACSURLHTTPRequest>) requester didFailToProcessForDataWithError:(NSError *) error;
-
-/**
- （请求未开始或进行中）请求数据时，产生的错误
- */
-- (void)request:(id <ACSURLHTTPRequest>) requester didFailToRequestForDataWithError:(NSError *) error;
+@implementation ACSFileRequest
 
 @end

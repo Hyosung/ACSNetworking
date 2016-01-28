@@ -22,9 +22,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "ACSURLHTTPRequest.h"
+#import "ACSHTTPRequest.h"
 
-@interface ACSURLHTTPRequester : NSObject <ACSURLHTTPRequest>
+@interface ACSURLHTTPRequester : ACSHTTPRequest
 
 /**
  是否缓存响应的数据

@@ -34,6 +34,7 @@
 #define __ACSNETWORK_PRIVATE__
 
 #import <Foundation/Foundation.h>
+#import <CommonCrypto/CommonDigest.h>
 
 #ifdef __cplusplus
 #define ACSNETWORK_EXTERN        extern "C" __attribute__((visibility ("default")))
@@ -43,23 +44,24 @@
 
 #define ACSNETWORK_STATIC_INLINE	 static inline
 
-#ifdef NS_ASSUME_NONNULL_BEGIN
-#define __ACSNonnull _Nonnull
-#else
-#define __ACSNonnull
-#endif
-
 #define ACSSynthesizeSnippet(propertyName) @synthesize propertyName = _##propertyName
 
 typedef NS_ENUM(NSUInteger, ACSResponseType) {
-    //未经过处理的数据
-//    ACSResponseTypeRaw = 0   ,
+    
     //上传文件与普通的GET/POST请求
     ACSResponseTypeData = 0  ,
     ACSResponseTypeJSON      ,
+    ACSResponseTypePropertyList ,
     //下载文件
     ACSResponseTypeImage     ,
     ACSResponseTypeFilePath
+};
+
+typedef NS_ENUM(NSUInteger, ACSRequestType) {
+    
+    ACSRequestTypeDefault = 0  ,
+    ACSRequestTypeJSON ,
+    ACSRequestTypePropertyList
 };
 
 typedef NS_ENUM(NSUInteger, ACSRequestMethod) {
@@ -70,6 +72,28 @@ typedef NS_ENUM(NSUInteger, ACSRequestMethod) {
     ACSRequestMethodPATCH    ,
     ACSRequestMethodDELETE
 };
+
+typedef struct ACSRequestProgress {
+    NSUInteger bytes;
+    CGFloat progressValue;
+    long long totalBytes, totalBytesExpected;
+} ACSRequestProgress;
+
+#define ACSRequestProgressZero (ACSRequestProgress){0, 0.0, 0, 0}
+
+typedef void(^ACSRequestCompletionHandler)(id result, NSError *error);
+typedef void(^ACSRequestProgressHandler)(ACSRequestProgress progress, id result, NSError *error);
+
+#pragma mark - Static inline
+
+ACSNETWORK_STATIC_INLINE ACSRequestProgress ACSRequestProgressMake(NSUInteger bytes, CGFloat progressValue, long long totalBytes, long long totalBytesExpected) {
+    ACSRequestProgress progress = {bytes, progressValue, totalBytes, totalBytesExpected};
+    return progress;
+}
+
+ACSNETWORK_STATIC_INLINE bool ACSRequestProgressIsEmpty(ACSRequestProgress progress) {
+    return progress.bytes <= 0 && progress.totalBytes <= 0 && progress.totalBytesExpected <= 0;
+}
 
 ACSNETWORK_STATIC_INLINE NSString * ACSHTTPMethod(ACSRequestMethod method) {
     static dispatch_once_t onceToken;
@@ -87,24 +111,59 @@ ACSNETWORK_STATIC_INLINE NSString * ACSHTTPMethod(ACSRequestMethod method) {
     return methods[@(method)];
 }
 
-typedef struct ACSRequestProgress {
-    NSUInteger bytes;
-    CGFloat progressValue;
-    long long totalBytes, totalBytesExpected;
-} ACSRequestProgress;
-
-ACSNETWORK_STATIC_INLINE ACSRequestProgress ACSRequestProgressMake(NSUInteger bytes, CGFloat progressValue, long long totalBytes, long long totalBytesExpected) {
-    ACSRequestProgress progress = {bytes, progressValue, totalBytes, totalBytesExpected};
-    return progress;
+ACSNETWORK_STATIC_INLINE NSString * ACSMD5(NSString *plaintext) {
+    const char *str = [plaintext UTF8String];
+    if (str == NULL) {
+        str = "";
+    }
+    unsigned char r[CC_MD5_DIGEST_LENGTH];
+    CC_MD5(str, (CC_LONG)strlen(str), r);
+    NSMutableString *md5Ciphertext = [NSMutableString stringWithString:@""];
+    for (int i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
+        [md5Ciphertext appendFormat:@"%02x",r[i]];
+    }
+    return [md5Ciphertext copy];
 }
 
-ACSNETWORK_STATIC_INLINE bool ACSRequestProgressIsEmpty(ACSRequestProgress progress) {
-    return progress.bytes <= 0 && progress.totalBytes <= 0 && progress.totalBytesExpected <= 0;
+ACSNETWORK_STATIC_INLINE NSString * ACSFilePathFromURL(NSURL *URL, NSString *folderPath, NSString *extension) {
+    
+    assert(URL);
+    assert(folderPath);
+    
+    NSString *pathExtension = (extension && ![extension isEqualToString:@""]) ? [NSString stringWithFormat:@".%@", [extension lowercaseString]] : @"";
+    NSString *fileName = [NSString stringWithFormat:@"%@%@", ACSMD5(URL.absoluteString), pathExtension];
+    NSString *filePath = [folderPath stringByAppendingPathComponent:fileName];
+    return filePath;
 }
 
-#define ACSRequestProgressZero (ACSRequestProgress){0, 0.0, 0, 0}
+ACSNETWORK_STATIC_INLINE NSData * ACSFileDataFromPath(NSString *path, NSTimeInterval downloadExpirationTimeInterval) {
+    NSFileManager *fileManager = [NSFileManager new];
+    if (![fileManager fileExistsAtPath:path]) {
+        return nil;
+    }
+    
+    NSDictionary *fileAttributes = [fileManager attributesOfItemAtPath:path error:nil];
+    if (fileAttributes) {
+        //判断文件是否过期
+        NSTimeInterval timeDifference = [[NSDate date] timeIntervalSinceDate:[fileAttributes fileModificationDate]];
+        if (timeDifference > downloadExpirationTimeInterval) {
+            return nil;
+        }
+    }
+    return [fileManager contentsAtPath:path];
+}
 
-typedef void(^ACSRequestCompletionHandler)(id result, NSError *error);
-typedef void(^ACSRequestProgressHandler)(ACSRequestProgress progress, id result, NSError *error);
+ACSNETWORK_STATIC_INLINE unsigned long long ACSFileSizeFromPath(NSString *path) {
+    unsigned long long fileSize = 0;
+    NSFileManager *fileManager = [NSFileManager new];
+    if ([fileManager fileExistsAtPath:path]) {
+        NSError *error = nil;
+        NSDictionary *fileAttributes = [fileManager attributesOfItemAtPath:path error:&error];
+        if (!error && fileAttributes) {
+            fileSize = [fileAttributes fileSize];
+        }
+    }
+    return fileSize;
+}
 
 #endif
