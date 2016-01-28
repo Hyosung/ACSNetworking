@@ -14,7 +14,7 @@
 		1B6C97F3CD6F1F80ABDD1C4605419AAB /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C09F774770C3C99A7B2B1E7C3E52286A /* Foundation.framework */; };
 		222A582D36091F081259403813F4969F /* UIProgressView+AFNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = 22CE4EBA3128CBF250B07E4C61223AB3 /* UIProgressView+AFNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2498B18D1C3C3D478CFE57E89F482851 /* NSData+ACSMimeType.h in Headers */ = {isa = PBXBuildFile; fileRef = D50715445CD0F9F4F8E6F63A794CAE6F /* NSData+ACSMimeType.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25BBC77531C4C3CB7E92C8B2349CFC22 /* ACSNetworkPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = B3A1B2590F7DAF5CF495E1153F0AA491 /* ACSNetworkPrivate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25BBC77531C4C3CB7E92C8B2349CFC22 /* ACSNetworkGeneral.h in Headers */ = {isa = PBXBuildFile; fileRef = B3A1B2590F7DAF5CF495E1153F0AA491 /* ACSNetworkGeneral.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2A8157E61B42C70A70A879582FE4479C /* ACSHTTPRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = E723617D77CA44D4579721E5BC8A3275 /* ACSHTTPRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2E463B0B048DF481F9D63AC78002BF44 /* AFURLSessionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = FDAE038BD917E7EE0E109EAF313AA41A /* AFURLSessionManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		37209261ED11EB097EA01A14F403F729 /* UIProgressView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B67ED5127517D905D8D5D1F46B2FCF5 /* UIProgressView+AFNetworking.m */; };
@@ -160,7 +160,7 @@
 		A9810786B6EB62AE893EB9BC947BD5D7 /* UIRefreshControl+AFNetworking.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIRefreshControl+AFNetworking.m"; path = "UIKit+AFNetworking/UIRefreshControl+AFNetworking.m"; sourceTree = "<group>"; };
 		AB2F76F56150FD8547FC75328B2B378D /* AFSecurityPolicy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFSecurityPolicy.m; path = AFNetworking/AFSecurityPolicy.m; sourceTree = "<group>"; };
 		ABD0086D09661FE01D86466693C0DA89 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
-		B3A1B2590F7DAF5CF495E1153F0AA491 /* ACSNetworkPrivate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ACSNetworkPrivate.h; sourceTree = "<group>"; };
+		B3A1B2590F7DAF5CF495E1153F0AA491 /* ACSNetworkGeneral.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ACSNetworkGeneral.h; sourceTree = "<group>"; };
 		B3C047BFAC28AD0ED2389846D8EEEB7E /* ACSFileUploader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ACSFileUploader.m; sourceTree = "<group>"; };
 		B564828F5362A6D95BC691B23A5FBA73 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		B7742C926713FEDE466383EFF776709C /* AFURLRequestSerialization.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFURLRequestSerialization.h; path = AFNetworking/AFURLRequestSerialization.h; sourceTree = "<group>"; };
@@ -332,19 +332,22 @@
 				CF03BE41A75C3948D63AE0FC159F24B8 /* ACSCache.m */,
 				EC7CFBD68E97C48CFBB3D31B0BB76535 /* ACSFileDownloader.h */,
 				85DE5C33F3EB14C622E1966AB380D3AE /* ACSFileDownloader.m */,
+				DD1846821C4DCF0D00335D9B /* ACSFileRequest.h */,
+				DD1846831C4DCF0D00335D9B /* ACSFileRequest.m */,
 				FA81404C3A3E4BD58C47B569AFAA9294 /* ACSFileUploader.h */,
 				B3C047BFAC28AD0ED2389846D8EEEB7E /* ACSFileUploader.m */,
+				E723617D77CA44D4579721E5BC8A3275 /* ACSHTTPRequest.h */,
+				DD1846801C4DCA4100335D9B /* ACSHTTPRequest.m */,
 				6FF21B24593DA17C80F10385B8F7B9D2 /* ACSNetworkConfiguration.h */,
 				690257585E30627C892FB6AF7979A908 /* ACSNetworkConfiguration.m */,
+				B3A1B2590F7DAF5CF495E1153F0AA491 /* ACSNetworkGeneral.h */,
 				38428414B78637ECC6FF6FFCAAAA9B94 /* ACSNetworking.h */,
-				B3A1B2590F7DAF5CF495E1153F0AA491 /* ACSNetworkPrivate.h */,
 				DD28945D1C5A01A100CE5FBE /* ACSReachability.h */,
 				DD28945E1C5A01A100CE5FBE /* ACSReachability.m */,
 				5DB9082518DEE0412C3D749DD1F39918 /* ACSRequestManager.h */,
 				F5CF405E47367656D14F5A89FD9A4BC7 /* ACSRequestManager.m */,
 				4A87305AA99A2BA0A41299BC704446B0 /* ACSURLHTTPRequester.h */,
 				2FE39BDAEFB4858E5C61FACB20F46961 /* ACSURLHTTPRequester.m */,
-				DD1846861C4DCFD300335D9B /* Base Request */,
 				D50715445CD0F9F4F8E6F63A794CAE6F /* NSData+ACSMimeType.h */,
 				51901528154CD24F4249AB5C164DAD9B /* NSData+ACSMimeType.m */,
 			);
@@ -404,17 +407,6 @@
 			);
 			name = "Support Files";
 			path = "../Target Support Files/AFNetworking";
-			sourceTree = "<group>";
-		};
-		DD1846861C4DCFD300335D9B /* Base Request */ = {
-			isa = PBXGroup;
-			children = (
-				DD1846821C4DCF0D00335D9B /* ACSFileRequest.h */,
-				DD1846831C4DCF0D00335D9B /* ACSFileRequest.m */,
-				E723617D77CA44D4579721E5BC8A3275 /* ACSHTTPRequest.h */,
-				DD1846801C4DCA4100335D9B /* ACSHTTPRequest.m */,
-			);
-			name = "Base Request";
 			sourceTree = "<group>";
 		};
 		E3FA9456FE3F6913C533ADFC87D2EDB3 /* NSURLConnection */ = {
@@ -486,7 +478,7 @@
 				8434A5AAAE48DBE7740D7EAFDC135AE4 /* ACSFileUploader.h in Headers */,
 				896EE7A9746ACD2CBF36FAB67E38AAA6 /* ACSNetworkConfiguration.h in Headers */,
 				7125ED11793F550743BB58A03C782A28 /* ACSNetworking.h in Headers */,
-				25BBC77531C4C3CB7E92C8B2349CFC22 /* ACSNetworkPrivate.h in Headers */,
+				25BBC77531C4C3CB7E92C8B2349CFC22 /* ACSNetworkGeneral.h in Headers */,
 				A880EFACBB69DBE3B6A124EAFF343262 /* ACSRequestManager.h in Headers */,
 				DD1846841C4DCF0D00335D9B /* ACSFileRequest.h in Headers */,
 				2A8157E61B42C70A70A879582FE4479C /* ACSHTTPRequest.h in Headers */,

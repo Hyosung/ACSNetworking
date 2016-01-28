@@ -27,7 +27,7 @@
 #if TARGET_OS_IPHONE
 #import <UIKit/UIApplication.h>
 #endif
-#import "ACSNetworkPrivate.h"
+#import "ACSNetworkGeneral.h"
 
 @interface ACSCachedObject : NSObject <NSCoding>
 

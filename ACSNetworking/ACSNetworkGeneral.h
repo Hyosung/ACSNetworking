@@ -1,4 +1,4 @@
-// ACSNetworkPrivate.h
+// ACSNetworkGeneral.h
 // ACSNetworking
 //
 // Created by Stoney on 8/4/15.
@@ -30,8 +30,8 @@
 #error "请导入AFNetworking"
 #endif
 
-#ifndef __ACSNETWORK_PRIVATE__
-#define __ACSNETWORK_PRIVATE__
+#ifndef __ACSNETWORK_GENERAL__
+#define __ACSNETWORK_GENERAL__
 
 #import <Foundation/Foundation.h>
 #import <CommonCrypto/CommonDigest.h>
@@ -166,4 +166,4 @@ ACSNETWORK_STATIC_INLINE unsigned long long ACSFileSizeFromPath(NSString *path) 
     return fileSize;
 }
 
-#endif
+#endif /* __ACSNETWORK_GENERAL__ */

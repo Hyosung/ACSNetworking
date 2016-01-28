@@ -13,14 +13,10 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target = '7.0'
   s.osx.deployment_target = '10.9'
-  s.watchos.deployment_target = '2.0'
-  s.tvos.deployment_target = '9.0'
 
   s.requires_arc = true
   s.source       = { :git => 'https://github.com/Hyosung/ACSNetworking.git', :tag => s.version.to_s }
-  s.public_header_files = 'ACSNetworking/ACSNetworking.h'
-  s.private_header_files = 'ACSNetworking/ACSNetworkPrivate.h'
-  s.source_files = 'ACSNetworking/ACSNetworking.h'
+  s.source_files = 'ACSNetworking/ACSNetwork{ing, General}.h'
 
   s.subspec 'Reachability' do |ss|
 
@@ -31,7 +27,7 @@ Pod::Spec.new do |s|
     ss.ios.frameworks = 'CoreTelephony', 'UIKit'
   end
 
-  s.subspec 'Base Requester' do |ss|
+  s.subspec 'BaseRequester' do |ss|
 
     ss.source_files = 'ACSNetworking/ACS{File, HTTP}Request.{h,m}'
     ss.public_header_files = 'ACSNetworking/ACS{File, HTTP}Request.h'
@@ -46,14 +42,6 @@ Pod::Spec.new do |s|
     ss.osx.frameworks = 'CoreServices'
   end
 
-  s.subspec 'Configuration' do |ss|
-    ss.dependency = 'ACSNetworking/Cache'
-
-    ss.source_files = 'ACSNetworking/ACSNetworkConfiguration.{h,m}'
-    ss.public_header_files = 'ACSNetworking/ACSNetworkConfiguration.h'
-
-    ss.ios.frameworks = 'UIKit'
-  end
 
   s.subspec 'Cache' do |ss|
 
@@ -63,11 +51,20 @@ Pod::Spec.new do |s|
     ss.ios.frameworks = 'UIKit'
   end
 
+  s.subspec 'Configuration' do |ss|
+    ss.dependency 'ACSNetworking/Cache'
+
+    ss.source_files = 'ACSNetworking/ACSNetworkConfiguration.{h,m}'
+    ss.public_header_files = 'ACSNetworking/ACSNetworkConfiguration.h'
+
+    ss.ios.frameworks = 'UIKit'
+  end
+
   s.subspec 'Requester' do |ss|
-    ss.dependency = 'ACSNetworking/Base Requester'
-    ss.dependency = 'ACSNetworking/Cache'
-    ss.dependency = 'ACSNetworking/Configuration'
-    ss.dependency = 'ACSNetworking/Foundation'
+    ss.dependency 'ACSNetworking/BaseRequester'
+    ss.dependency 'ACSNetworking/Cache'
+    ss.dependency 'ACSNetworking/Configuration'
+    ss.dependency 'ACSNetworking/Foundation'
 
     ss.source_files = 'ACSNetworking/ACS{FileDownload,FileUpload,URLHTTPRequest,RequestManag}er.{h,m}'
     ss.public_header_files = 'ACSNetworking/ACS{FileDownload,FileUpload,URLHTTPRequest,RequestManag}er.h'

@@ -266,6 +266,7 @@ static void ACSReachabilityCallback(SCNetworkReachabilityRef __unused target, SC
         }
     }
     
+#ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
     if ((flags & kSCNetworkReachabilityFlagsIsWWAN) == kSCNetworkReachabilityFlagsIsWWAN) {
         /*
          ... but WWAN connections are OK if the calling application is using the CFNetwork APIs.
@@ -302,6 +303,7 @@ static void ACSReachabilityCallback(SCNetworkReachabilityRef __unused target, SC
         }
 #endif
     }
+#endif
     
     return returnValue;
 }
@@ -309,6 +311,9 @@ static void ACSReachabilityCallback(SCNetworkReachabilityRef __unused target, SC
 - (BOOL)isReachable {
     return (self.reachabilityStatus != ACSReachabilityStatusNotReachable);
 }
+
+
+#ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
 
 - (BOOL)isReachableViaWWAN {
 #if	TARGET_OS_IPHONE
@@ -340,6 +345,8 @@ static void ACSReachabilityCallback(SCNetworkReachabilityRef __unused target, SC
 - (BOOL)isReachableVia4G {
     return (self.reachabilityStatus == ACSReachabilityStatusReachableVia4G);
 }
+#endif
+
 #endif
 
 - (BOOL)isReachableViaWiFi {
