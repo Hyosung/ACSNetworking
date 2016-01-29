@@ -21,7 +21,6 @@ Pod::Spec.new do |s|
   s.subspec 'Reachability' do |ss|
 
     ss.source_files = 'ACSNetworking/ACSReachability.{h,m}'
-    ss.public_header_files = 'ACSNetworking/ACSReachability.h'
 
     ss.frameworks = 'SystemConfiguration'
     ss.ios.frameworks = 'CoreTelephony', 'UIKit'
@@ -30,13 +29,11 @@ Pod::Spec.new do |s|
   s.subspec 'BaseRequester' do |ss|
 
     ss.source_files = 'ACSNetworking/ACS{File, HTTP}Request.{h,m}'
-    ss.public_header_files = 'ACSNetworking/ACS{File, HTTP}Request.h'
   end
 
   s.subspec 'Foundation' do |ss|
 
     ss.source_files = 'ACSNetworking/NSData+ACSMimeType.{h,m}'
-    ss.public_header_files = 'ACSNetworking/NSData+ACSMimeType.h'
 
     ss.ios.frameworks = 'MobileCoreServices'
     ss.osx.frameworks = 'CoreServices'
@@ -46,7 +43,6 @@ Pod::Spec.new do |s|
   s.subspec 'Cache' do |ss|
 
     ss.source_files = 'ACSNetworking/ACSCache.{h,m}'
-    ss.public_header_files = 'ACSNetworking/ACSCache.h'
 
     ss.ios.frameworks = 'UIKit'
   end
@@ -55,22 +51,22 @@ Pod::Spec.new do |s|
     ss.dependency 'ACSNetworking/Cache'
 
     ss.source_files = 'ACSNetworking/ACSNetworkConfiguration.{h,m}'
-    ss.public_header_files = 'ACSNetworking/ACSNetworkConfiguration.h'
 
     ss.ios.frameworks = 'UIKit'
   end
 
   s.subspec 'Requester' do |ss|
-    ss.dependency 'ACSNetworking/BaseRequester'
+    ss.dependency 'ACSNetworking/Reachability'
     ss.dependency 'ACSNetworking/Cache'
     ss.dependency 'ACSNetworking/Configuration'
     ss.dependency 'ACSNetworking/Foundation'
+    ss.dependency 'ACSNetworking/BaseRequester'
 
-    ss.source_files = 'ACSNetworking/ACS{FileDownload,FileUpload,URLHTTPRequest,RequestManag}er.{h,m}'
-    ss.public_header_files = 'ACSNetworking/ACS{FileDownload,FileUpload,URLHTTPRequest,RequestManag}er.h'
+    ss.source_files = 'ACSNetworking/ACS*er.{h,m}'
 
     ss.ios.frameworks = 'UIKit', 'MobileCoreServices'
     ss.osx.frameworks = 'AppKit', 'CoreServices'
   end
+
   s.dependency 'AFNetworking', '~> 2.6.0'
 end
