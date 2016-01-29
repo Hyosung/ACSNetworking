@@ -27,7 +27,7 @@
 #elif __has_include("AFNetworking.h")
 #import "AFNetworking.h"
 #else
-#error "请导入AFNetworking"
+#warning import the AFNetworking
 #endif
 
 #ifndef __ACSNETWORK_GENERAL__
@@ -35,6 +35,13 @@
 
 #import <Foundation/Foundation.h>
 #import <CommonCrypto/CommonDigest.h>
+
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
+#import <MobileCoreServices/MobileCoreServices.h>
+#import <CoreGraphics/CoreGraphics.h>
+#else
+#import <CoreServices/CoreServices.h>
+#endif
 
 #ifdef __cplusplus
 #define ACSNETWORK_EXTERN        extern "C" __attribute__((visibility ("default")))
@@ -164,6 +171,32 @@ ACSNETWORK_STATIC_INLINE unsigned long long ACSFileSizeFromPath(NSString *path) 
         }
     }
     return fileSize;
+}
+
+
+ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString * __unused MIMEType) {
+    
+#ifdef __UTTYPE__
+    CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, (__bridge CFStringRef)MIMEType, NULL);
+    CFStringRef filenameExtension = UTTypeCopyPreferredTagWithClass(UTI, kUTTagClassFilenameExtension);
+    CFRelease(UTI);
+    if (!filenameExtension) {
+        return @"";
+    }
+    return CFBridgingRelease(filenameExtension);
+#else
+    return @"";
+#endif
+}
+
+ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromContentType(NSString *contentType) {
+    
+    NSRange pointRange = [contentType rangeOfString:@"."options:NSBackwardsSearch];
+    if (pointRange.location == NSNotFound) {
+        return nil;
+    }
+    
+    return [contentType substringFromIndex:pointRange.location + 1];
 }
 
 #endif /* __ACSNETWORK_GENERAL__ */

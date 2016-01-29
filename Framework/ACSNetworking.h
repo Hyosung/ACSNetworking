@@ -1,4 +1,4 @@
-// ACSNetworkConfiguration.h
+// ACSNetworking.h
 // ACSNetworking
 //
 // Created by Stoney on 8/4/15.
@@ -22,39 +22,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "ACSNetworkGeneral.h"
+#import <Foundation/Foundation.h>
 
-@interface ACSNetworkConfiguration : NSObject
+//! Project version number for ACSNetworking.
+FOUNDATION_EXPORT double ACSNetworkingVersionNumber;
 
-/**
- 单例
- */
-+ (instancetype)defaultConfiguration;
-+ (instancetype)configuration;
+//! Project version string for ACSNetworking.
+FOUNDATION_EXPORT const unsigned char ACSNetworkingVersionString[];
 
-@property (nonatomic, strong) NSURL *baseURL;
+// In this header, you should import all the public headers of your framework using statements like #import <ACSNetworking/PublicHeader.h>
 
-#ifdef _AFNETWORKING_
-/**
- 默认 [AFSecurityPolicy defaultPolicy]
- */
-@property (nonatomic, strong) AFSecurityPolicy *securityPolicy;
+#import <Availability.h>
+#import <TargetConditionals.h>
 
-#endif
+#ifndef __ACSNETWORKING__
+#define __ACSNETWORKING__
 
-/**
- 下载文件的存放文件夹 ~/Document/com.stoney.ACSNetworking_Download
- */
-@property (nonatomic, copy, readonly) NSString *downloadFolder;
+#import <ACSNetworking/ACSCache.h>
+#import <ACSNetworking/ACSNetworkConfiguration.h>
+#import <ACSNetworking/ACSReachability.h>
 
-/**
- 下载文件的过期时间 默认一周 (60.0 * 60.0 * 24.0 * 7)s
- */
-@property (nonatomic) NSTimeInterval downloadExpirationTimeInterval;
+#import <ACSNetworking/ACSFileUploader.h>
+#import <ACSNetworking/ACSFileDownloader.h>
+#import <ACSNetworking/ACSURLHTTPRequester.h>
+#import <ACSNetworking/ACSRequestManager.h>
 
-/**
- 缓存过期时间 默认 180.0s(3min)
- */
-@property (nonatomic) NSTimeInterval cacheExpirationTimeInterval;
-
-@end
+#endif /* __ACSNETWORKING__ */

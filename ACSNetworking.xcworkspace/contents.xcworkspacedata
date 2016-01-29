@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "container:ACSNetworking.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Example/ACSNetworking Example.xcodeproj">
+   </FileRef>
+</Workspace>

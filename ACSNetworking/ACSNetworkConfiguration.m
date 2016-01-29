@@ -70,8 +70,9 @@
     self = [super init];
     if (self) {
         _backgroundQueue = dispatch_queue_create("com.stoney.ACSNetworking", DISPATCH_QUEUE_SERIAL);
-        
+#ifdef _AFNETWORKING_
         _securityPolicy = [AFSecurityPolicy defaultPolicy];
+#endif
         
         dispatch_sync(_backgroundQueue, ^{
             _fileManager = [NSFileManager new];

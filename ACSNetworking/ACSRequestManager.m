@@ -33,9 +33,7 @@
 #import "ACSCache.h"
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
-#import <MobileCoreServices/MobileCoreServices.h>
 #else
-#import <CoreServices/CoreServices.h>
 #import <AppKit/AppKit.h>
 #endif
 
@@ -72,31 +70,6 @@ NSString *const ACSNetworkingErrorDescriptionKey = @"ACSNetworkingErrorDescripti
 //ACSNETWORK_STATIC_INLINE NSString * ACSGenerateOperationIdentifier() {
 //    return [NSString stringWithFormat:@"%08x%08x", arc4random(), arc4random()];
 //}
-
-ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromMIMEType(NSString * __unused MIMEType) {
-    
-#ifdef __UTTYPE__
-    CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, (__bridge CFStringRef)MIMEType, NULL);
-    CFStringRef filenameExtension = UTTypeCopyPreferredTagWithClass(UTI, kUTTagClassFilenameExtension);
-    CFRelease(UTI);
-    if (!filenameExtension) {
-        return @"";
-    }
-    return CFBridgingRelease(filenameExtension);
-#else
-    return @"";
-#endif
-}
-
-ACSNETWORK_STATIC_INLINE NSString * ACSExtensionFromContentType(NSString *contentType) {
-    
-    NSRange pointRange = [contentType rangeOfString:@"."options:NSBackwardsSearch];
-    if (pointRange.location == NSNotFound) {
-        return nil;
-    }
-    
-    return [contentType substringFromIndex:pointRange.location + 1];
-}
 
 #ifdef _AFNETWORKING_
 
