@@ -11,7 +11,7 @@ ACSNetworking是一个依赖于[AFNetworking](https://github.com/AFNetworking/AF
 
 ```ruby
 platform :ios, '7.0'
-pod "ACSNetworking", "~> 1.0.0"
+pod "ACSNetworking", "~> 1.3"
 ```
 
 ### Requester
@@ -48,8 +48,6 @@ pod "ACSNetworking", "~> 1.0.0"
     [ACSNetworkConfiguration defaultConfiguration].downloadExpirationTimeInterval = 60.0 * 60.0 * 24.0 * 7;
     
     [ACSNetworkConfiguration defaultConfiguration].securityPolicy = [AFSecurityPolicy defaultPolicy];
-    [ACSNetworkConfiguration defaultConfiguration].requestSerializer = [AFHTTPRequestSerializer serializer];
-    [ACSNetworkConfiguration defaultConfiguration].responseSerializer = [AFHTTPResponseSerializer serializer];
     
     return YES;
 }
@@ -77,15 +75,15 @@ ACSRequestManager *manager = [ACSRequestManager manager];
 ACSURLHTTPRequester *requester = ACSCreateGETRequester([NSURL URLWithString:@"http://example.com/resources.json"], nil, self);
 [manager fetchDataFromRequester:requester];
 
-- (void)request:(id<ACSURLHTTPRequest>)requester didFailToRequestForDataWithError:(NSError *)error {
+- (void)request:(ACSHTTPRequest *)requester didFailToRequestForDataWithError:(NSError *)error {
     NSLog(@"Error %@", error);
 }
 
-- (void)request:(id<ACSURLHTTPRequest>)requester didFailToProcessForDataWithError:(NSError *)error {
+- (void)request:(ACSHTTPRequest *)requester didFailToProcessForDataWithError:(NSError *)error {
     NSLog(@"Process Error %@", error);
 }
 
-- (void)request:(id<ACSURLHTTPRequest>)requester didReceiveData:(id)data {
+- (void)request:(ACSHTTPRequest *)requester didReceiveData:(id)data {
     NSLog(@"responseObject %@", data);
 }
 ```
@@ -139,15 +137,15 @@ ACSRequestManager *manager = [ACSRequestManager manager];
 ACSURLHTTPRequester *requester = ACSCreatePOSTRequester([NSURL URLWithString:@"http://example.com/resources.json"], nil, self);
 [manager fetchDataFromRequester:requester];
 
-- (void)request:(id<ACSURLHTTPRequest>)requester didFailToRequestForDataWithError:(NSError *)error {
+- (void)request:(ACSHTTPRequest *)requester didFailToRequestForDataWithError:(NSError *)error {
     NSLog(@"Error %@", error);
 }
 
-- (void)request:(id<ACSURLHTTPRequest>)requester didFailToProcessForDataWithError:(NSError *)error {
+- (void)request:(ACSHTTPRequest *)requester didFailToProcessForDataWithError:(NSError *)error {
     NSLog(@"Process Error %@", error);
 }
 
-- (void)request:(id<ACSURLHTTPRequest>)requester didReceiveData:(id)data {
+- (void)request:(ACSHTTPRequest *)requester didReceiveData:(id)data {
     NSLog(@"responseObject %@", data);
 }
 ```
@@ -194,7 +192,7 @@ ACSFileUploader *requester = ACSCreateUploader([NSURL URLWithString:@"http://exa
 requester.parameters = parameters;
 [manager fetchDataFromRequester:requester];
 ......
-- (void)request:(id<ACSURLFileRequest>)requester didFileProgressing:(ACSRequestProgress)progress {
+- (void)request:(ACSHTTPRequest *)requester didFileProgressing:(ACSRequestProgress)progress {
     NSLog(@"Progress %f", progress.progressValue);
 }
 ```
