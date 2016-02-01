@@ -80,8 +80,6 @@
 		DD58F43A1C5B1D8800236B97 /* NSData+ACSMimeType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+ACSMimeType.m"; sourceTree = "<group>"; };
 		DD58F4521C5B1DDD00236B97 /* ACSNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ACSNetworking.h; path = ../Framework/ACSNetworking.h; sourceTree = "<group>"; };
 		DD58F4531C5B1DDD00236B97 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../Framework/Info.plist; sourceTree = "<group>"; };
-		DD6378641C5B449A00598A56 /* ACSNetworking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ACSNetworking.h; sourceTree = "<group>"; };
-		DD6378661C5B449A00598A56 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,7 +104,6 @@
 			isa = PBXGroup;
 			children = (
 				DD58F3E51C5B1B6100236B97 /* ACSNetworking */,
-				DD6378631C5B449A00598A56 /* ACSNetworking */,
 				DD58F3E41C5B1B6100236B97 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -157,15 +154,6 @@
 				DD58F4531C5B1DDD00236B97 /* Info.plist */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		DD6378631C5B449A00598A56 /* ACSNetworking */ = {
-			isa = PBXGroup;
-			children = (
-				DD6378641C5B449A00598A56 /* ACSNetworking.h */,
-				DD6378661C5B449A00598A56 /* Info.plist */,
-			);
-			path = ACSNetworking;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
