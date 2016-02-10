@@ -5,7 +5,7 @@ ACSNetworking是一个依赖于[AFNetworking](https://github.com/AFNetworking/AF
 
 #### 直接导入
 [下载 ACSNetworking](https://github.com/Hyosung/ACSNetworking/archive/master.zip) 然后导入到你的iOS或者OSX项目中，注意你还得[下载 AFNetworking](https://github.com/AFNetworking/AFNetworking/archive/master.zip)
-#### 使用Cocoapods
+#### 使用CocoaPods
 
 **Podfile**
 
