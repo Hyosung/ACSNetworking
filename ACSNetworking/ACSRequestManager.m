@@ -100,6 +100,7 @@ NSString *const ACSNetworkingErrorDescriptionKey = @"ACSNetworkingErrorDescripti
         
         self.manager = [[AFHTTPRequestOperationManager alloc] initWithBaseURL:self.configuration.baseURL];
         self.manager.securityPolicy = self.configuration.securityPolicy;
+        self.manager.responseSerializer = [AFHTTPResponseSerializer serializer];
         self.fileManager = [NSFileManager new];
         self.reachability = [ACSReachability reachabilityForInternetConnection];
         [self.reachability startNotifier];
@@ -151,23 +152,25 @@ NSString *const ACSNetworkingErrorDescriptionKey = @"ACSNetworkingErrorDescripti
             
             NSError *error = nil;
             id resultObject = responseObject;
-            switch (requester.responseType) {
-                case ACSResponseTypeJSON: {
-                    resultObject  = [NSJSONSerialization JSONObjectWithData:responseObject
-                                                                    options:NSJSONReadingAllowFragments
-                                                                      error:&error];
-                    break;
+            if (responseObject) {
+                switch (requester.responseType) {
+                    case ACSResponseTypeJSON: {
+                        resultObject  = [NSJSONSerialization JSONObjectWithData:responseObject
+                                                                        options:NSJSONReadingAllowFragments
+                                                                          error:&error];
+                        break;
+                    }
+                    case ACSResponseTypePropertyList: {
+                        resultObject = [NSPropertyListSerialization propertyListWithData:responseObject
+                                                                                 options:NSPropertyListMutableContainers
+                                                                                  format:NULL
+                                                                                   error:&error];
+                        break;
+                    }
+                        
+                    default:
+                        break;
                 }
-                case ACSResponseTypePropertyList: {
-                    resultObject = [NSPropertyListSerialization propertyListWithData:responseObject
-                                                                             options:NSPropertyListMutableContainers
-                                                                              format:NULL
-                                                                               error:&error];
-                    break;
-                }
-                    
-                default:
-                    break;
             }
             
             if ([requester isKindOfClass:[ACSURLHTTPRequester class]]) {
@@ -331,10 +334,14 @@ NSString *const ACSNetworkingErrorDescriptionKey = @"ACSNetworkingErrorDescripti
     if (tempData) {
         
         if ([requester respondsToSelector:@selector(progressBlock)]) {
-             ((ACSFileDownloader *)requester).progressBlock(ACSRequestProgressZero, tempData, nil);
+            if (((ACSFileDownloader *)requester).progressBlock) {
+                ((ACSFileDownloader *)requester).progressBlock(ACSRequestProgressZero, tempData, nil);
+            }
         }
         else if ([requester respondsToSelector:@selector(completionBlock)]) {
-            ((ACSURLHTTPRequester *)requester).completionBlock(tempData, nil);
+            if (((ACSURLHTTPRequester *)requester).completionBlock) {
+                ((ACSURLHTTPRequester *)requester).completionBlock(tempData, nil);
+            }
         }
         
         if (requester.delegate) {
@@ -388,6 +395,10 @@ NSString *const ACSNetworkingErrorDescriptionKey = @"ACSNetworkingErrorDescripti
 }
 
 - (id)dataSerializer:(id) data responseType:(ACSResponseType) responseType {
+    if (!data) {
+        return nil;
+    }
+    
     id serualizerResult = data;
     switch (responseType) {
         case ACSResponseTypeJSON: {
@@ -419,6 +430,7 @@ NSString *const ACSNetworkingErrorDescriptionKey = @"ACSNetworkingErrorDescripti
             if ([data isKindOfClass:[NSData class]]) {
                 serualizerResult = nil;
             }
+            break;
         }
         case ACSResponseTypeData: {
             if ([data isKindOfClass:[NSString class]]) {

@@ -22,6 +22,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#ifndef __ACSNETWORK_GENERAL__
+#define __ACSNETWORK_GENERAL__
+
 #if __has_include(<AFNetworking.h>)
 #import <AFNetworking.h>
 #elif __has_include("AFNetworking.h")
@@ -29,9 +32,6 @@
 #else
 #warning import the AFNetworking
 #endif
-
-#ifndef __ACSNETWORK_GENERAL__
-#define __ACSNETWORK_GENERAL__
 
 #import <Foundation/Foundation.h>
 #import <CommonCrypto/CommonDigest.h>

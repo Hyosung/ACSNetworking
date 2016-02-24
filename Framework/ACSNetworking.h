@@ -38,6 +38,8 @@ FOUNDATION_EXPORT const unsigned char ACSNetworkingVersionString[];
 #ifndef __ACSNETWORKING__
 #define __ACSNETWORKING__
 
+#import <ACSNetworking/NSData+ACSMimeType.h>
+
 #import <ACSNetworking/ACSCache.h>
 #import <ACSNetworking/ACSNetworkConfiguration.h>
 #import <ACSNetworking/ACSReachability.h>

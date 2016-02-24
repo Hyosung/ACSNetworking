@@ -7,13 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BEC4DDB31C7DC1A80028A976 /* ACSCache.m in Sources */ = {isa = PBXBuildFile; fileRef = BEC4DD9E1C7DC1A80028A976 /* ACSCache.m */; };
+		BEC4DDB41C7DC1A80028A976 /* ACSFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = BEC4DDA01C7DC1A80028A976 /* ACSFileDownloader.m */; };
+		BEC4DDB51C7DC1A80028A976 /* ACSFileRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = BEC4DDA21C7DC1A80028A976 /* ACSFileRequest.m */; };
+		BEC4DDB61C7DC1A80028A976 /* ACSFileUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = BEC4DDA41C7DC1A80028A976 /* ACSFileUploader.m */; };
+		BEC4DDB71C7DC1A80028A976 /* ACSHTTPRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = BEC4DDA61C7DC1A80028A976 /* ACSHTTPRequest.m */; };
+		BEC4DDB81C7DC1A80028A976 /* ACSNetworkConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = BEC4DDA81C7DC1A80028A976 /* ACSNetworkConfiguration.m */; };
+		BEC4DDB91C7DC1A80028A976 /* ACSReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = BEC4DDAC1C7DC1A80028A976 /* ACSReachability.m */; };
+		BEC4DDBA1C7DC1A80028A976 /* ACSRequestManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BEC4DDAE1C7DC1A80028A976 /* ACSRequestManager.m */; };
+		BEC4DDBB1C7DC1A80028A976 /* ACSURLHTTPRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = BEC4DDB01C7DC1A80028A976 /* ACSURLHTTPRequester.m */; };
+		BEC4DDBC1C7DC1A80028A976 /* NSData+ACSMimeType.m in Sources */ = {isa = PBXBuildFile; fileRef = BEC4DDB21C7DC1A80028A976 /* NSData+ACSMimeType.m */; };
 		DD58F5C21C5B2A4C00236B97 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DD58F5B81C5B2A4C00236B97 /* AppDelegate.m */; };
 		DD58F5C31C5B2A4C00236B97 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD58F5B91C5B2A4C00236B97 /* Assets.xcassets */; };
 		DD58F5C41C5B2A4C00236B97 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DD58F5BA1C5B2A4C00236B97 /* LaunchScreen.storyboard */; };
 		DD58F5C51C5B2A4C00236B97 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DD58F5BC1C5B2A4C00236B97 /* Main.storyboard */; };
 		DD58F5C71C5B2A4C00236B97 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DD58F5BF1C5B2A4C00236B97 /* main.m */; };
 		DD58F5C81C5B2A4C00236B97 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DD58F5C11C5B2A4C00236B97 /* ViewController.m */; };
-		DD58F5F51C5B3F7300236B97 /* ACSNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD58F5F41C5B3F7300236B97 /* ACSNetworking.framework */; };
 		DD6378CC1C5B456900598A56 /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = DD6378A51C5B456900598A56 /* AFHTTPRequestOperation.m */; };
 		DD6378CD1C5B456900598A56 /* AFHTTPRequestOperationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DD6378A71C5B456900598A56 /* AFHTTPRequestOperationManager.m */; };
 		DD6378CE1C5B456900598A56 /* AFHTTPSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DD6378A91C5B456900598A56 /* AFHTTPSessionManager.m */; };
@@ -34,6 +43,28 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BEC4DD9D1C7DC1A80028A976 /* ACSCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACSCache.h; sourceTree = "<group>"; };
+		BEC4DD9E1C7DC1A80028A976 /* ACSCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ACSCache.m; sourceTree = "<group>"; };
+		BEC4DD9F1C7DC1A80028A976 /* ACSFileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACSFileDownloader.h; sourceTree = "<group>"; };
+		BEC4DDA01C7DC1A80028A976 /* ACSFileDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ACSFileDownloader.m; sourceTree = "<group>"; };
+		BEC4DDA11C7DC1A80028A976 /* ACSFileRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACSFileRequest.h; sourceTree = "<group>"; };
+		BEC4DDA21C7DC1A80028A976 /* ACSFileRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ACSFileRequest.m; sourceTree = "<group>"; };
+		BEC4DDA31C7DC1A80028A976 /* ACSFileUploader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACSFileUploader.h; sourceTree = "<group>"; };
+		BEC4DDA41C7DC1A80028A976 /* ACSFileUploader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ACSFileUploader.m; sourceTree = "<group>"; };
+		BEC4DDA51C7DC1A80028A976 /* ACSHTTPRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACSHTTPRequest.h; sourceTree = "<group>"; };
+		BEC4DDA61C7DC1A80028A976 /* ACSHTTPRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ACSHTTPRequest.m; sourceTree = "<group>"; };
+		BEC4DDA71C7DC1A80028A976 /* ACSNetworkConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACSNetworkConfiguration.h; sourceTree = "<group>"; };
+		BEC4DDA81C7DC1A80028A976 /* ACSNetworkConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ACSNetworkConfiguration.m; sourceTree = "<group>"; };
+		BEC4DDA91C7DC1A80028A976 /* ACSNetworkGeneral.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACSNetworkGeneral.h; sourceTree = "<group>"; };
+		BEC4DDAA1C7DC1A80028A976 /* ACSNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACSNetworking.h; sourceTree = "<group>"; };
+		BEC4DDAB1C7DC1A80028A976 /* ACSReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACSReachability.h; sourceTree = "<group>"; };
+		BEC4DDAC1C7DC1A80028A976 /* ACSReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ACSReachability.m; sourceTree = "<group>"; };
+		BEC4DDAD1C7DC1A80028A976 /* ACSRequestManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACSRequestManager.h; sourceTree = "<group>"; };
+		BEC4DDAE1C7DC1A80028A976 /* ACSRequestManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ACSRequestManager.m; sourceTree = "<group>"; };
+		BEC4DDAF1C7DC1A80028A976 /* ACSURLHTTPRequester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ACSURLHTTPRequester.h; sourceTree = "<group>"; };
+		BEC4DDB01C7DC1A80028A976 /* ACSURLHTTPRequester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ACSURLHTTPRequester.m; sourceTree = "<group>"; };
+		BEC4DDB11C7DC1A80028A976 /* NSData+ACSMimeType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+ACSMimeType.h"; sourceTree = "<group>"; };
+		BEC4DDB21C7DC1A80028A976 /* NSData+ACSMimeType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+ACSMimeType.m"; sourceTree = "<group>"; };
 		DD58F59C1C5B287400236B97 /* iOS Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iOS Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD58F5B71C5B2A4C00236B97 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		DD58F5B81C5B2A4C00236B97 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -44,7 +75,6 @@
 		DD58F5BF1C5B2A4C00236B97 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		DD58F5C01C5B2A4C00236B97 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		DD58F5C11C5B2A4C00236B97 /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		DD58F5F41C5B3F7300236B97 /* ACSNetworking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ACSNetworking.framework; path = "../../../../Library/Developer/Xcode/DerivedData/ACSNetworking-eihuwtliyehlkhfycirltrobgnyw/Build/Products/Debug-iphoneos/ACSNetworking.framework"; sourceTree = "<group>"; };
 		DD6378A41C5B456900598A56 /* AFHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperation.h; sourceTree = "<group>"; };
 		DD6378A51C5B456900598A56 /* AFHTTPRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFHTTPRequestOperation.m; sourceTree = "<group>"; };
 		DD6378A61C5B456900598A56 /* AFHTTPRequestOperationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperationManager.h; sourceTree = "<group>"; };
@@ -91,16 +121,46 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DD58F5F51C5B3F7300236B97 /* ACSNetworking.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BEC4DD9C1C7DC1A80028A976 /* ACSNetworking */ = {
+			isa = PBXGroup;
+			children = (
+				BEC4DD9D1C7DC1A80028A976 /* ACSCache.h */,
+				BEC4DD9E1C7DC1A80028A976 /* ACSCache.m */,
+				BEC4DD9F1C7DC1A80028A976 /* ACSFileDownloader.h */,
+				BEC4DDA01C7DC1A80028A976 /* ACSFileDownloader.m */,
+				BEC4DDA11C7DC1A80028A976 /* ACSFileRequest.h */,
+				BEC4DDA21C7DC1A80028A976 /* ACSFileRequest.m */,
+				BEC4DDA31C7DC1A80028A976 /* ACSFileUploader.h */,
+				BEC4DDA41C7DC1A80028A976 /* ACSFileUploader.m */,
+				BEC4DDA51C7DC1A80028A976 /* ACSHTTPRequest.h */,
+				BEC4DDA61C7DC1A80028A976 /* ACSHTTPRequest.m */,
+				BEC4DDA71C7DC1A80028A976 /* ACSNetworkConfiguration.h */,
+				BEC4DDA81C7DC1A80028A976 /* ACSNetworkConfiguration.m */,
+				BEC4DDA91C7DC1A80028A976 /* ACSNetworkGeneral.h */,
+				BEC4DDAA1C7DC1A80028A976 /* ACSNetworking.h */,
+				BEC4DDAB1C7DC1A80028A976 /* ACSReachability.h */,
+				BEC4DDAC1C7DC1A80028A976 /* ACSReachability.m */,
+				BEC4DDAD1C7DC1A80028A976 /* ACSRequestManager.h */,
+				BEC4DDAE1C7DC1A80028A976 /* ACSRequestManager.m */,
+				BEC4DDAF1C7DC1A80028A976 /* ACSURLHTTPRequester.h */,
+				BEC4DDB01C7DC1A80028A976 /* ACSURLHTTPRequester.m */,
+				BEC4DDB11C7DC1A80028A976 /* NSData+ACSMimeType.h */,
+				BEC4DDB21C7DC1A80028A976 /* NSData+ACSMimeType.m */,
+			);
+			name = ACSNetworking;
+			path = ../ACSNetworking;
+			sourceTree = "<group>";
+		};
 		DD58F5931C5B287400236B97 = {
 			isa = PBXGroup;
 			children = (
+				BEC4DD9C1C7DC1A80028A976 /* ACSNetworking */,
 				DD6378A21C5B456900598A56 /* AFNetworking */,
 				DD58F5B61C5B2A4C00236B97 /* iOS Example */,
 				DD58F5E21C5B359600236B97 /* Frameworks */,
@@ -143,7 +203,6 @@
 		DD58F5E21C5B359600236B97 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				DD58F5F41C5B3F7300236B97 /* ACSNetworking.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -282,8 +341,11 @@
 			files = (
 				DD6378DC1C5B456900598A56 /* UIProgressView+AFNetworking.m in Sources */,
 				DD6378DA1C5B456900598A56 /* UIButton+AFNetworking.m in Sources */,
+				BEC4DDB51C7DC1A80028A976 /* ACSFileRequest.m in Sources */,
 				DD6378DD1C5B456900598A56 /* UIRefreshControl+AFNetworking.m in Sources */,
 				DD6378D91C5B456900598A56 /* UIAlertView+AFNetworking.m in Sources */,
+				BEC4DDB81C7DC1A80028A976 /* ACSNetworkConfiguration.m in Sources */,
+				BEC4DDB31C7DC1A80028A976 /* ACSCache.m in Sources */,
 				DD6378CC1C5B456900598A56 /* AFHTTPRequestOperation.m in Sources */,
 				DD58F5C81C5B2A4C00236B97 /* ViewController.m in Sources */,
 				DD6378CD1C5B456900598A56 /* AFHTTPRequestOperationManager.m in Sources */,
@@ -293,13 +355,20 @@
 				DD6378D81C5B456900598A56 /* UIActivityIndicatorView+AFNetworking.m in Sources */,
 				DD6378D11C5B456900598A56 /* AFURLConnectionOperation.m in Sources */,
 				DD6378D01C5B456900598A56 /* AFSecurityPolicy.m in Sources */,
+				BEC4DDBC1C7DC1A80028A976 /* NSData+ACSMimeType.m in Sources */,
 				DD6378CE1C5B456900598A56 /* AFHTTPSessionManager.m in Sources */,
 				DD6378D21C5B456900598A56 /* AFURLRequestSerialization.m in Sources */,
+				BEC4DDBB1C7DC1A80028A976 /* ACSURLHTTPRequester.m in Sources */,
+				BEC4DDB71C7DC1A80028A976 /* ACSHTTPRequest.m in Sources */,
 				DD6378D41C5B456900598A56 /* AFURLSessionManager.m in Sources */,
 				DD6378DE1C5B456900598A56 /* UIWebView+AFNetworking.m in Sources */,
+				BEC4DDBA1C7DC1A80028A976 /* ACSRequestManager.m in Sources */,
+				BEC4DDB41C7DC1A80028A976 /* ACSFileDownloader.m in Sources */,
 				DD58F5C71C5B2A4C00236B97 /* main.m in Sources */,
 				DD6378D71C5B456900598A56 /* AFNetworkActivityIndicatorManager.m in Sources */,
+				BEC4DDB91C7DC1A80028A976 /* ACSReachability.m in Sources */,
 				DD58F5C21C5B2A4C00236B97 /* AppDelegate.m in Sources */,
+				BEC4DDB61C7DC1A80028A976 /* ACSFileUploader.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -412,11 +481,16 @@
 		DD58F5B41C5B287400236B97 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
+				FRAMEWORK_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "iOS Example/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.stone.ACSNetworking-Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -425,11 +499,16 @@
 		DD58F5B51C5B287400236B97 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
+				FRAMEWORK_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "iOS Example/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.stone.ACSNetworking-Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
