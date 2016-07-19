@@ -8,7 +8,7 @@
 
 #import "ViewController.h"
 
-@import ACSNetworking;
+#import "ACSNetworking.h"
 
 @interface ViewController () <ACSURLRequesterDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *ac_imageView;

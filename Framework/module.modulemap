@@ -1,0 +1,5 @@
+framework module ACSNetworking {
+    umbrella header "ACSNetworking.h"
+    export *
+    module * { export * }
+}
